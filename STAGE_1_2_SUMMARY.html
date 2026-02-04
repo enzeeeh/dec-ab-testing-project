@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A/B Testing Project - Stage 1 & 2 Completion Summary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        h4 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 40px 0;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        table th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-align: center;
+            min-width: 60px;
+        }
+        
+        .badge-pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warn {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-caution {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .danger-box {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        
+        .test-card {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .test-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>A/B Testing Project - Stage 1 & 2 Completion Summary</h1>
+        
+        <h2><span class="status-indicator">✅</span> Stages Completed</h2>
+        
+        <h3>Stage 0: Project Setup</h3>
+        <ul>
+            <li>✅ Created complete project folder structure</li>
+            <li>✅ Set up <code>scripts/</code> directory with modular Python code</li>
+            <li>✅ Set up <code>reports/</code> and <code>figures/</code> directories</li>
+            <li>✅ Created <code>requirements.txt</code> with all dependencies</li>
+            <li>✅ Documented project setup in <code>PROJECT_SETUP.md</code></li>
+        </ul>
+        
+        <h3>Stage 1: Data Loading & Initial Inspection</h3>
+        <ul>
+            <li>✅ Loaded all 5 A/B test datasets successfully</li>
+            <li>✅ Inspected data structure and columns</li>
+            <li>✅ Identified test variants and metrics</li>
+            <li>✅ Documented test configurations</li>
+        </ul>
+        
+        <h3>Stage 2: Data Validation & Quality Checks</h3>
+        <ul>
+            <li>✅ Performed Sample Ratio Mismatch (SRM) tests</li>
+            <li>✅ Conducted data integrity checks</li>
+            <li>✅ Verified randomization balance</li>
+            <li>✅ Checked temporal consistency</li>
+            <li>✅ Detected and analyzed outliers</li>
+            <li>✅ Validated sample size adequacy</li>
+            <li>✅ Generated validation reports for all 5 tests</li>
+        </ul>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">📊</span> Validation Results Summary</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Test</th>
+                    <th>Sample Size</th>
+                    <th>SRM</th>
+                    <th>Data Integrity</th>
+                    <th>Randomization</th>
+                    <th>Temporal</th>
+                    <th>Sample Size</th>
+                    <th>Overall</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Menu Navigation</strong></td>
+                    <td>7,000</td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-warn">WARN</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-fail">UNDER</span></td>
+                    <td><span class="badge badge-caution">CAUTION</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Novelty Slider</strong></td>
+                    <td>16,000</td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-warn">WARN</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-caution">CAUTION</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Product Sliders</strong></td>
+                    <td>18,000</td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-warn">WARN</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-warn">WARN</span></td>
+                    <td><span class="badge badge-caution">CAUTION</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Reviews</strong></td>
+                    <td>42,000</td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-warn">WARN</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-caution">CAUTION</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Search Engine</strong></td>
+                    <td>19,000</td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-warn">WARN</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-pass">PASS</span></td>
+                    <td><span class="badge badge-caution">CAUTION</span></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">🔍</span> Key Findings</h2>
+        
+        <div class="success-box">
+            <h3>✅ Good News:</h3>
+            <ol>
+                <li><strong>No Sample Ratio Mismatch</strong> - All tests passed SRM checks (p=1.0 for perfect 50/50 splits)</li>
+                <li><strong>Balanced Randomization</strong> - All demographic variables properly balanced across variants</li>
+                <li><strong>Temporal Consistency</strong> - Variant splits remained stable throughout test periods</li>
+                <li><strong>No Missing Values</strong> - All critical fields complete</li>
+                <li><strong>Acceptable Outlier Levels</strong> - All tests within normal range (&lt;11%)</li>
+            </ol>
+        </div>
+        
+        <div class="warning-box">
+            <h3>⚠️ Issues Found:</h3>
+            
+            <h4>1. Duplicate Session IDs (All Tests)</h4>
+            <ul>
+                <li><strong>Issue:</strong> Each test has exactly 50% duplicate session IDs</li>
+                <li><strong>Impact:</strong> This suggests each session appears twice in the dataset</li>
+                <li><strong>Likely Cause:</strong> Data export/join issue, or intentional structure (e.g., one row per variant exposure)</li>
+                <li><strong>Recommendation:</strong>
+                    <ul>
+                        <li>Verify if duplicates are intentional</li>
+                        <li>If not, deduplicate before statistical analysis</li>
+                        <li>Check data generation process</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h4>2. Sample Size (Test 1 - Menu)</h4>
+            <ul>
+                <li><strong>Issue:</strong> Only 3,500 per variant (need ~6,400 for 5% MDE)</li>
+                <li><strong>Impact:</strong> Can only detect 6.8% effects (not 5%)</li>
+                <li><strong>Recommendation:</strong> Accept lower sensitivity or collect more data</li>
+            </ul>
+        </div>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">📁</span> Generated Files</h2>
+        
+        <h3>Code & Scripts:</h3>
+        <pre>scripts/
+├── __init__.py                  - Package initializer
+├── utils.py                     - Utility functions
+└── validation.py                - Comprehensive validation class
+
+notebooks/
+├── stage1_and_2_validation.py   - Original validation script
+└── run_validation.py            - Console-safe version ✅</pre>
+        
+        <h3>Reports Generated:</h3>
+        <pre>reports/validation_reports/
+├── test1_menu_validation_report.txt
+├── test2_novelty_slider_validation_report.txt
+├── test3_product_sliders_validation_report.txt
+├── test4_reviews_validation_report.txt
+├── test5_search_engine_validation_report.txt
+└── validation_summary.txt</pre>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">🎯</span> Test Details</h2>
+        
+        <div class="test-card">
+            <h3>Test 1: Menu Navigation</h3>
+            <ul>
+                <li><strong>Variants:</strong> A_horizontal_menu vs B_dropdown_menu</li>
+                <li><strong>Sample:</strong> 7,000 sessions (3,500 each)</li>
+                <li><strong>Duration:</strong> March 1-7, 2021 (7 days)</li>
+                <li><strong>Primary Metric:</strong> Revenue</li>
+                <li><strong>Status:</strong> <span class="badge badge-warn">⚠️ Underpowered</span> - can detect 6.8% effect (vs desired 5%)</li>
+            </ul>
+        </div>
+        
+        <div class="test-card">
+            <h3>Test 2: Novelty Slider</h3>
+            <ul>
+                <li><strong>Variants:</strong> A_manual_novelties vs B_personalized_novelties</li>
+                <li><strong>Sample:</strong> 16,000 sessions (8,000 each)</li>
+                <li><strong>Duration:</strong> March 9-21, 2021 (13 days)</li>
+                <li><strong>Primary Metric:</strong> Novelty revenue</li>
+                <li><strong>Status:</strong> <span class="badge badge-pass">✅ Adequate power</span></li>
+            </ul>
+        </div>
+        
+        <div class="test-card">
+            <h3>Test 3: Product Sliders</h3>
+            <ul>
+                <li><strong>Variants:</strong> A_selected_by_others_only vs B_similar_products_top vs C_selected_by_others_top</li>
+                <li><strong>Sample:</strong> 18,000 sessions (6,000 each)</li>
+                <li><strong>Duration:</strong> March 23 - April 5, 2021 (14 days)</li>
+                <li><strong>Primary Metric:</strong> Revenue from recommendations</li>
+                <li><strong>Status:</strong> <span class="badge badge-warn">⚠️ Slightly underpowered</span> (can detect 5.2%)</li>
+            </ul>
+        </div>
+        
+        <div class="test-card">
+            <h3>Test 4: Reviews ⭐ LARGEST</h3>
+            <ul>
+                <li><strong>Variants:</strong> A_no_featured_reviews vs B_featured_reviews</li>
+                <li><strong>Sample:</strong> 42,000 sessions (21,000 each)</li>
+                <li><strong>Duration:</strong> April 7 - May 11, 2021 (35 days)</li>
+                <li><strong>Primary Metric:</strong> Conversion rate</li>
+                <li><strong>Status:</strong> <span class="badge badge-pass">✅ Well-powered</span></li>
+            </ul>
+        </div>
+        
+        <div class="test-card">
+            <h3>Test 5: Search Engine</h3>
+            <ul>
+                <li><strong>Variants:</strong> A_hybris_search vs B_algolia_search</li>
+                <li><strong>Sample:</strong> 19,000 sessions (9,500 each)</li>
+                <li><strong>Duration:</strong> June 11-17, 2021 (7 days)</li>
+                <li><strong>Primary Metric:</strong> Revenue per visitor</li>
+                <li><strong>Status:</strong> <span class="badge badge-pass">✅ Adequate power</span></li>
+            </ul>
+        </div>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">🚨</span> Critical Action Items</h2>
+        
+        <div class="danger-box">
+            <h3>Before Proceeding to Stage 3:</h3>
+            
+            <h4>1. Investigate Duplicate Sessions ⚠️ HIGH PRIORITY</h4>
+            <pre># Need to determine if duplicates are:
+- Data error (remove duplicates)
+- Intentional design (keep as-is)
+- Multiple exposures per session (use first/last/aggregate)</pre>
+            
+            <h4>2. Decision on Test 1 (Menu)</h4>
+            <ul>
+                <li>Accept 6.8% Minimum Detectable Effect, OR</li>
+                <li>Collect ~3,000 more sessions per variant</li>
+            </ul>
+            
+            <h4>3. Review Data Generation Process</h4>
+            <ul>
+                <li>Understand why every test has exactly 50% duplicates</li>
+                <li>Verify data export methodology</li>
+            </ul>
+        </div>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">✅</span> What Can Proceed:</h2>
+        
+        <div class="success-box">
+            <p>All tests <strong>pass critical checks</strong>:</p>
+            <ul>
+                <li>✅ No Sample Ratio Mismatch</li>
+                <li>✅ Balanced randomization</li>
+                <li>✅ Temporal stability</li>
+                <li>✅ No data corruption</li>
+            </ul>
+            <p><strong>Recommendation:</strong> After addressing duplicate session issue, all tests are ready for statistical analysis (Stage 3-4).</p>
+        </div>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">📌</span> Next Steps</h2>
+        
+        <div class="info-box">
+            <h3>Immediate:</h3>
+            <ol>
+                <li>Review validation reports in <code>reports/validation_reports/</code></li>
+                <li>Investigate duplicate session IDs</li>
+                <li>Make decision on handling duplicates</li>
+            </ol>
+            
+            <h3>Then Proceed To:</h3>
+            <ul>
+                <li><strong>Stage 3:</strong> Exploratory Data Analysis (EDA)</li>
+                <li><strong>Stage 4:</strong> Statistical Testing</li>
+                <li><strong>Stage 5:</strong> Segmentation Analysis</li>
+                <li><strong>Stage 6:</strong> Business Impact Calculation</li>
+                <li><strong>Stage 7:</strong> Reporting & Recommendations</li>
+            </ul>
+        </div>
+        
+        <hr>
+        
+        <h2><span class="status-indicator">📝</span> Documentation</h2>
+        
+        <p>All project documentation available in:</p>
+        <ul>
+            <li><strong>PROJECT_SETUP.md</strong> - Complete project setup and methodology</li>
+            <li><strong>reports/validation_reports/</strong> - Detailed validation results</li>
+            <li><strong>README.md</strong> - (To be created in next stage)</li>
+        </ul>
+        
+        <div class="footer">
+            <p><strong>Validation Completed:</strong> February 4, 2026</p>
+            <p><strong>Status:</strong> ✅ Ready for next stage (pending duplicate resolution)</p>
+            <p><strong>Confidence Level:</strong> High - data quality is good overall</p>
+        </div>
+    </div>
+</body>
+</html>

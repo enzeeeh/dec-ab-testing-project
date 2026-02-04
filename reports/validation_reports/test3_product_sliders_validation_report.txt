@@ -1,0 +1,47 @@
+VALIDATION REPORT: Product Sliders Test
+======================================================================
+
+SRM
+----------------------------------------------------------------------
+Status: ✅ PASS
+Message: No Sample Ratio Mismatch detected.
+Passed: True
+
+DATA INTEGRITY
+----------------------------------------------------------------------
+Status: ⚠️ WARNING
+Message: Minor data quality issues detected: 1 issue(s).
+Passed: False
+
+RANDOMIZATION BALANCE
+----------------------------------------------------------------------
+Status: ✅ PASS
+Message: Randomization appears balanced across all demographic variables.
+Passed: True
+
+TEMPORAL CONSISTENCY
+----------------------------------------------------------------------
+Status: ✅ PASS
+Message: Variant split is temporally consistent.
+Passed: True
+
+OUTLIERS
+----------------------------------------------------------------------
+Status: ✅ PASS
+Message: Outlier levels are within acceptable range.
+Passed: True
+
+SAMPLE SIZE
+----------------------------------------------------------------------
+Status: ⚠️ WARNING
+Message: Sample size may be underpowered. Can detect ~5.2% effect.
+Passed: True
+
+OVERALL
+----------------------------------------------------------------------
+Status: ❌ QUESTIONABLE
+Message: Test has significant validity issues. Results may not be trustworthy.
+Passed: N/A
+
+======================================================================
+Report generated: 2026-02-04 14:10:41.392403

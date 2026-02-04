@@ -1,0 +1,11 @@
+VALIDATION SUMMARY - ALL TESTS
+================================================================================
+
+                Test  Sample Size  SRM Data Integrity Randomization Temporal    Overall Status
+Menu Navigation Test         7000 PASS           WARN          PASS     PASS FAIL QUESTIONABLE
+ Novelty Slider Test        16000 PASS           WARN          PASS     PASS FAIL QUESTIONABLE
+Product Sliders Test        18000 PASS           WARN          PASS     PASS FAIL QUESTIONABLE
+        Reviews Test        42000 PASS           WARN          PASS     PASS FAIL QUESTIONABLE
+  Search Engine Test        19000 PASS           WARN          PASS     PASS FAIL QUESTIONABLE
+
+Generated: 2026-02-04 14:10:41.989186
