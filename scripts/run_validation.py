@@ -22,7 +22,7 @@ if sys.platform == 'win32':
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
 
 from utils import load_test_data, get_test_info
-from validation import ABTestValidator
+from validation import ExperimentValidator
 
 
 def print_test_summary_safe(test_name: str, df: pd.DataFrame):
@@ -160,10 +160,17 @@ def main():
         print(f"Processing: {test_config['name']}...")
         
         # Create validator
-        validator = ABTestValidator(df, test_config['name'])
+        validator = ExperimentValidator()
         
         # Run all validations (output to file)
-        validation_results = validator.run_all_validations()
+        # Covariates for balance check
+        covariates = ['device_type', 'browser', 'region']
+        validation_results = validator.run_all_validations(
+            df=df,
+            variant_col='variant',
+            covariates=covariates,
+            date_col='timestamp'
+        )
         
         # Store results
         all_validation_results[test_id] = validation_results

@@ -3,45 +3,39 @@ VALIDATION REPORT: Reviews Test
 
 SRM
 ----------------------------------------------------------------------
-Status: ✅ PASS
-Message: No Sample Ratio Mismatch detected.
+Status: N/A
+Message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
 Passed: True
 
 DATA INTEGRITY
 ----------------------------------------------------------------------
 Status: ⚠️ WARNING
 Message: Minor data quality issues detected: 1 issue(s).
-Passed: False
-
-RANDOMIZATION BALANCE
-----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Randomization appears balanced across all demographic variables.
 Passed: True
 
-TEMPORAL CONSISTENCY
+BALANCE
 ----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Variant split is temporally consistent.
+Status: N/A
+Message: ✅ Excellent balance (max SMD=0.014 < 0.1)
+Passed: True
+
+TEMPORAL
+----------------------------------------------------------------------
+Status: N/A
+Message: ✅ Stable allocation (max CV=0.047 < 0.2)
 Passed: True
 
 OUTLIERS
 ----------------------------------------------------------------------
 Status: ⚠️ WARNING
-Message: High percentage of outliers detected (17.10%). Consider winsorization.
+Message: High outlier percentage (17.10%). Consider winsorization.
 Passed: False
 
 SAMPLE SIZE
 ----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Sample size is adequate for detecting 5.0% effect.
+Status: ✅ ADEQUATE
+Message: Sample size sufficient for 5.0% MDE.
 Passed: True
 
-OVERALL
-----------------------------------------------------------------------
-Status: ❌ QUESTIONABLE
-Message: Test has significant validity issues. Results may not be trustworthy.
-Passed: N/A
-
 ======================================================================
-Report generated: 2026-02-04 14:10:41.658249
+Report generated: 2026-02-08 00:02:13.038779

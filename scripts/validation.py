@@ -1,511 +1,705 @@
 """
-Data validation functions for A/B testing analysis
+Comprehensive Experimental Validation Framework for A/B Testing
+
+MERGED VALIDATION SUITE - Combines Best Practices from Both Implementations
+
+Implements ALL required validation checks:
+1. Sample Ratio Mismatch (SRM) Detection 
+2. Data Integrity Verification (duplicates, missing values, anomalies)
+3. Covariate Balance Verification (SMD-based)
+4. Temporal Stability Checks (CV and variance-based)
+5. Outlier Detection (IQR method)
+6. Sample Size Adequacy Tests
+7. Multiple Testing Correction (Bonferroni, Holm, FDR)
+
+Statistical Rigor + Practical Engineering Checks
+
+When run directly, validates all 5 A/B tests with comprehensive reporting.
+
+References:
+- Bonferroni (1936)
+- Holm (1979)
+- Benjamini & Hochberg (1995)
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from scipy import stats
-from typing import Dict, Tuple, List, Any
+from statsmodels.stats.multitest import multipletests
+from typing import Dict, List, Tuple, Optional, Union
 import warnings
+from datetime import datetime
+import os
 
 
-class ABTestValidator:
+class ExperimentValidator:
     """
-    Comprehensive A/B test validation class.
+    Modular validation framework for A/B tests.
+    
+    Provides individual validation methods that can be called independently
+    for maximum flexibility and reusability.
     """
     
-    def __init__(self, df: pd.DataFrame, test_name: str, variant_col: str = 'variant'):
+    def __init__(self, 
+                 srm_threshold: float = 0.001,
+                 balance_threshold: float = 0.2,
+                 temporal_threshold: float = 0.2):
         """
-        Initialize validator.
+        Initialize validator with thresholds.
         
         Parameters:
         -----------
-        df : pd.DataFrame
-            Test data
-        test_name : str
-            Name of the test
-        variant_col : str
-            Column name for variants
+        srm_threshold : float
+            P-value threshold for SRM detection (default: 0.001)
+        balance_threshold : float
+            SMD threshold for covariate balance (default: 0.2)
+        temporal_threshold : float
+            CV threshold for temporal stability (default: 0.2)
         """
-        self.df = df.copy()
-        self.test_name = test_name
-        self.variant_col = variant_col
-        self.validation_results = {}
-        
-    def run_all_validations(self) -> Dict[str, Any]:
-        """
-        Run all validation checks.
-        
-        Returns:
-        --------
-        Dict[str, Any]
-            Validation results
-        """
-        print(f"\n{'='*70}")
-        print(f"RUNNING VALIDATION FOR: {self.test_name}")
-        print(f"{'='*70}\n")
-        
-        # Run all validation checks
-        self.check_sample_ratio_mismatch()
-        self.check_data_integrity()
-        self.check_randomization_balance()
-        self.check_temporal_consistency()
-        self.check_outliers()
-        self.check_sample_size()
-        
-        # Overall assessment
-        self.assess_overall_validity()
-        
-        return self.validation_results
+        self.srm_threshold = srm_threshold
+        self.balance_threshold = balance_threshold
+        self.temporal_threshold = temporal_threshold
     
-    def check_sample_ratio_mismatch(self, expected_ratio: List[float] = None):
+    def sample_ratio_mismatch_test(self,
+                                   df: pd.DataFrame,
+                                   variant_col: str,
+                                   expected_ratio: Optional[Dict[str, float]] = None) -> Dict:
         """
-        Check for Sample Ratio Mismatch (SRM).
+        Sample Ratio Mismatch Detection using Chi-square test.
         
-        Parameters:
-        -----------
-        expected_ratio : List[float]
-            Expected ratio for each variant (default: equal split)
+        SRM is a critical issue that invalidates the entire experiment.
         """
-        print("1. Sample Ratio Mismatch (SRM) Test")
-        print("-" * 70)
         
-        variant_counts = self.df[self.variant_col].value_counts().sort_index()
-        total = len(self.df)
+        observed = df[variant_col].value_counts().sort_index()
+        total = len(df)
+        n_variants = len(observed)
         
-        # Default to equal split if not specified
         if expected_ratio is None:
-            n_variants = len(variant_counts)
-            expected_ratio = [1/n_variants] * n_variants
-        
-        expected_counts = [total * ratio for ratio in expected_ratio]
-        observed_counts = variant_counts.values
-        
-        # Chi-square test
-        chi2_stat, p_value = stats.chisquare(observed_counts, expected_counts)
-        
-        # Results
-        print(f"\nObserved Distribution:")
-        for variant, count in variant_counts.items():
-            pct = count / total * 100
-            print(f"  {variant}: {count:,} ({pct:.2f}%)")
-        
-        print(f"\nExpected Distribution:")
-        for i, (variant, ratio) in enumerate(zip(variant_counts.index, expected_ratio)):
-            expected = total * ratio
-            print(f"  {variant}: {expected:,.0f} ({ratio*100:.2f}%)")
-        
-        print(f"\nChi-square statistic: {chi2_stat:.4f}")
-        print(f"P-value: {p_value:.6f}")
-        
-        # Interpretation
-        if p_value < 0.001:
-            status = "❌ CRITICAL FAILURE"
-            message = "Strong evidence of Sample Ratio Mismatch! Test validity questionable."
-        elif p_value < 0.05:
-            status = "⚠️ WARNING"
-            message = "Possible Sample Ratio Mismatch detected. Investigate further."
+            expected = pd.Series([total / n_variants] * n_variants, index=observed.index)
         else:
-            status = "✅ PASS"
-            message = "No Sample Ratio Mismatch detected."
+            expected = pd.Series({k: v * total for k, v in expected_ratio.items()})
         
-        print(f"\nStatus: {status}")
-        print(f"Conclusion: {message}")
-        print()
+        chi2_stat = np.sum((observed - expected)**2 / expected)
+        df_chi = n_variants - 1
+        pvalue = 1 - stats.chi2.cdf(chi2_stat, df_chi)
         
-        self.validation_results['srm'] = {
+        has_srm = pvalue < self.srm_threshold
+        
+        result = {
+            'test': 'sample_ratio_mismatch',
             'chi2_statistic': chi2_stat,
-            'p_value': p_value,
-            'status': status,
-            'message': message,
-            'observed': variant_counts.to_dict(),
-            'passed': p_value >= 0.05
+            'degrees_of_freedom': df_chi,
+            'pvalue': pvalue,
+            'threshold': self.srm_threshold,
+            'has_srm': has_srm,
+            'observed_counts': observed.to_dict(),
+            'expected_counts': expected.to_dict(),
+            'observed_ratio': (observed / total).to_dict(),
+            'expected_ratio': (expected / total).to_dict(),
+            'passed': not has_srm
         }
+        
+        if has_srm:
+            result['warning'] = f"❌ CRITICAL: SRM detected (p={pvalue:.6f} < {self.srm_threshold}). Experiment is INVALID."
+        else:
+            result['message'] = f"✅ No SRM detected (p={pvalue:.4f}). Allocation is as expected."
+        
+        return result
     
-    def check_data_integrity(self):
+    def data_integrity_check(self, df: pd.DataFrame) -> Dict:
         """
-        Check data integrity issues.
+        Check for data integrity issues:
+        - Duplicate records
+        - Missing values
+        - Negative revenues
+        - Future dates
         """
-        print("2. Data Integrity Checks")
-        print("-" * 70)
         
         issues = []
         
-        # Check for duplicates
-        duplicates = self.df.duplicated(subset=['session_id']).sum()
-        print(f"\nDuplicate session_ids: {duplicates:,}")
+        # Duplicates
+        duplicates = df.duplicated(subset=['session_id']).sum() if 'session_id' in df.columns else 0
         if duplicates > 0:
-            issues.append(f"Found {duplicates} duplicate session IDs")
+            issues.append(f"Duplicate session IDs: {duplicates}")
         
-        # Check for missing values
-        missing = self.df.isnull().sum()
-        missing = missing[missing > 0]
-        if len(missing) > 0:
-            print(f"\nMissing values detected:")
-            for col, count in missing.items():
-                pct = count / len(self.df) * 100
-                print(f"  {col}: {count:,} ({pct:.2f}%)")
-                issues.append(f"{col} has {count} missing values ({pct:.2f}%)")
-        else:
-            print("\nNo missing values detected ✅")
+        # Missing values
+        missing_counts = df.isnull().sum()
+        missing_counts = missing_counts[missing_counts > 0]
+        for col, count in missing_counts.items():
+            pct = count / len(df) * 100
+            issues.append(f"{col} has {count} missing values ({pct:.2f}%)")
         
-        # Check timestamp validity
-        if 'timestamp' in self.df.columns:
-            self.df['timestamp'] = pd.to_datetime(self.df['timestamp'])
-            min_date = self.df['timestamp'].min()
-            max_date = self.df['timestamp'].max()
-            print(f"\nDate range: {min_date.date()} to {max_date.date()}")
-            
-            # Check for future dates
-            if max_date > pd.Timestamp.now():
-                issues.append(f"Future dates detected: {max_date}")
-        
-        # Check for negative values in metrics that should be positive
-        numeric_cols = self.df.select_dtypes(include=[np.number]).columns
+        # Negative values in revenue metrics
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
         for col in numeric_cols:
             if 'revenue' in col.lower() or 'price' in col.lower():
-                negative_count = (self.df[col] < 0).sum()
+                negative_count = (df[col] < 0).sum()
                 if negative_count > 0:
-                    print(f"\n⚠️ {col}: {negative_count} negative values detected")
                     issues.append(f"{col} has {negative_count} negative values")
         
-        # Overall status
+        # Future dates
+        if 'timestamp' in df.columns:
+            df_temp = df.copy()
+            df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'], errors='coerce')
+            future = (df_temp['timestamp'] > pd.Timestamp.now()).sum()
+            if future > 0:
+                issues.append(f"Future dates detected: {future} records")
+        
+        # Status
         if len(issues) == 0:
-            status = "✅ PASS"
+            status = '✅ PASS'
             message = "No data integrity issues detected."
+            passed = True
         elif len(issues) <= 2:
-            status = "⚠️ WARNING"
+            status = '⚠️ WARNING'
             message = f"Minor data quality issues detected: {len(issues)} issue(s)."
+            passed = True
         else:
-            status = "❌ FAIL"
-            message = f"Multiple data quality issues detected: {len(issues)} issue(s)."
+            status = '❌ FAIL'
+            message = f"Multiple data integrity issues: {len(issues)} issue(s)."
+            passed = False
         
-        print(f"\nStatus: {status}")
-        print(f"Conclusion: {message}")
-        print()
-        
-        self.validation_results['data_integrity'] = {
-            'duplicates': int(duplicates),
-            'missing_values': missing.to_dict() if len(missing) > 0 else {},
+        return {
+            'test': 'data_integrity',
             'issues': issues,
+            'n_issues': len(issues),
             'status': status,
             'message': message,
-            'passed': len(issues) == 0
+            'passed': passed
         }
     
-    def check_randomization_balance(self):
+    def covariate_balance_check(self,
+                                df: pd.DataFrame,
+                                variant_col: str,
+                                covariates: List[str],
+                                threshold: Optional[float] = None) -> Dict:
         """
-        Check if randomization is balanced across demographic variables.
+        Covariate balance verification using Standardized Mean Difference (SMD).
+        
+        SMD < 0.1: Excellent balance
+        SMD 0.1-0.2: Good balance
+        SMD > 0.2: Potential imbalance
         """
-        print("3. Randomization Balance Check")
-        print("-" * 70)
         
-        demographic_vars = ['device_type', 'browser', 'region']
-        balance_results = {}
-        imbalanced = []
+        if threshold is None:
+            threshold = self.balance_threshold
         
-        for var in demographic_vars:
-            if var not in self.df.columns:
+        variants = df[variant_col].unique()
+        
+        if len(variants) < 2:
+            return {'error': 'Need at least 2 variants for balance check', 'passed': False}
+        
+        balance_results = []
+        imbalanced_covariates = []
+        
+        for covariate in covariates:
+            if covariate not in df.columns:
                 continue
             
-            print(f"\n{var.upper()}:")
+            is_categorical = (
+                df[covariate].dtype == 'object' or 
+                df[covariate].dtype.name == 'category' or
+                df[covariate].nunique() < 10
+            )
             
-            # Create contingency table
-            contingency = pd.crosstab(self.df[self.variant_col], self.df[var])
-            
-            # Chi-square test
-            chi2, p_value, dof, expected = stats.chi2_contingency(contingency)
-            
-            # Display distribution
-            proportions = contingency.div(contingency.sum(axis=1), axis=0) * 100
-            print(proportions.round(2))
-            
-            print(f"\nChi-square: {chi2:.4f}, p-value: {p_value:.4f}")
-            
-            if p_value < 0.05:
-                print(f"⚠️ Imbalanced distribution detected (p < 0.05)")
-                imbalanced.append(var)
+            if is_categorical:
+                # Categorical: SMD for proportions
+                for category in df[covariate].unique():
+                    proportions = {}
+                    for variant in variants:
+                        variant_data = df[df[variant_col] == variant][covariate]
+                        proportions[variant] = (variant_data == category).mean()
+                    
+                    variant_list = list(variants)
+                    p1 = proportions[variant_list[0]]
+                    p2 = proportions[variant_list[1]]
+                    p_pooled = (p1 + p2) / 2
+                    
+                    if p_pooled > 0 and p_pooled < 1:
+                        smd = abs(p1 - p2) / np.sqrt(p_pooled * (1 - p_pooled))
+                    else:
+                        smd = 0.0
+                    
+                    is_imbalanced = smd > threshold
+                    
+                    balance_results.append({
+                        'covariate': f"{covariate}={category}",
+                        'type': 'categorical',
+                        'smd': smd,
+                        'imbalanced': is_imbalanced
+                    })
+                    
+                    if is_imbalanced:
+                        imbalanced_covariates.append(f"{covariate}={category}")
             else:
-                print(f"✅ Balanced distribution (p >= 0.05)")
-            
-            balance_results[var] = {
-                'chi2': chi2,
-                'p_value': p_value,
-                'balanced': p_value >= 0.05
-            }
+                # Continuous: SMD for means
+                variant_stats = {}
+                for variant in variants:
+                    variant_data = df[df[variant_col] == variant][covariate]
+                    variant_stats[variant] = {
+                        'mean': variant_data.mean(),
+                        'std': variant_data.std(),
+                        'var': variant_data.var()
+                    }
+                
+                variant_list = list(variants)
+                v1, v2 = variant_list[0], variant_list[1]
+                
+                mean_diff = abs(variant_stats[v1]['mean'] - variant_stats[v2]['mean'])
+                pooled_std = np.sqrt((variant_stats[v1]['var'] + variant_stats[v2]['var']) / 2)
+                
+                if pooled_std > 0:
+                    smd = mean_diff / pooled_std
+                else:
+                    smd = 0.0
+                
+                is_imbalanced = smd > threshold
+                
+                balance_results.append({
+                    'covariate': covariate,
+                    'type': 'continuous',
+                    'smd': smd,
+                    'imbalanced': is_imbalanced
+                })
+                
+                if is_imbalanced:
+                    imbalanced_covariates.append(covariate)
         
-        # Overall status
-        if len(imbalanced) == 0:
-            status = "✅ PASS"
-            message = "Randomization appears balanced across all demographic variables."
+        balance_df = pd.DataFrame(balance_results) if balance_results else pd.DataFrame()
+        max_smd = balance_df['smd'].max() if len(balance_df) > 0 else 0
+        n_imbalanced = len(imbalanced_covariates)
+        
+        if max_smd < 0.1:
+            message = f"✅ Excellent balance (max SMD={max_smd:.3f} < 0.1)"
+        elif max_smd < threshold:
+            message = f"✅ Good balance (max SMD={max_smd:.3f} < {threshold})"
         else:
-            status = "⚠️ WARNING"
-            message = f"Imbalanced randomization detected in: {', '.join(imbalanced)}. Consider stratified analysis."
+            message = f"⚠️ {n_imbalanced} covariate(s) imbalanced (max SMD={max_smd:.3f} ≥ {threshold})"
         
-        print(f"\nStatus: {status}")
-        print(f"Conclusion: {message}")
-        print()
-        
-        self.validation_results['randomization_balance'] = {
-            'results': balance_results,
-            'imbalanced_vars': imbalanced,
-            'status': status,
+        return {
+            'test': 'covariate_balance',
+            'balance_results': balance_df,
+            'imbalanced_covariates': imbalanced_covariates,
+            'n_imbalanced': n_imbalanced,
+            'max_smd': max_smd,
+            'threshold': threshold,
             'message': message,
-            'passed': len(imbalanced) == 0
+            'passed': max_smd < threshold
         }
     
-    def check_temporal_consistency(self):
+    def temporal_stability_check(self,
+                                df: pd.DataFrame,
+                                variant_col: str,
+                                date_col: str,
+                                threshold: Optional[float] = None) -> Dict:
         """
-        Check temporal consistency of variant split.
+        Temporal stability verification using Coefficient of Variation.
+        
+        Checks if variant allocation remains stable across time.
         """
-        print("4. Temporal Consistency Check")
-        print("-" * 70)
         
-        if 'timestamp' not in self.df.columns:
-            print("⚠️ Timestamp column not found. Skipping temporal check.\n")
-            self.validation_results['temporal_consistency'] = {
-                'status': 'SKIPPED',
-                'message': 'No timestamp data available',
-                'passed': True
-            }
-            return
+        if threshold is None:
+            threshold = self.temporal_threshold
         
-        # Daily variant split
-        self.df['date'] = pd.to_datetime(self.df['timestamp']).dt.date
-        daily_split = pd.crosstab(self.df['date'], self.df[self.variant_col], normalize='index') * 100
+        df = df.copy()
+        if not pd.api.types.is_datetime64_any_dtype(df[date_col]):
+            df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
         
-        print(f"\nDaily Variant Split (first 10 days):")
-        print(daily_split.head(10).round(2))
+        df['date'] = df[date_col].dt.date
+        daily_counts = df.groupby(['date', variant_col]).size().unstack(fill_value=0)
         
-        # Calculate variance in daily split
-        variants = self.df[self.variant_col].unique()
-        variance_by_variant = {}
+        cv_results = {}
+        for variant in daily_counts.columns:
+            counts = daily_counts[variant]
+            mean_count = counts.mean()
+            std_count = counts.std()
+            cv = std_count / mean_count if mean_count > 0 else 0.0
+            cv_results[variant] = cv
         
-        for variant in variants:
-            variance = daily_split[variant].var()
-            variance_by_variant[variant] = variance
-            print(f"\nVariance in daily % for {variant}: {variance:.2f}")
+        max_cv = max(cv_results.values()) if cv_results else 0
+        is_stable = max_cv < threshold
         
-        # Check if variance is too high (indicating instability)
-        max_variance = max(variance_by_variant.values())
+        message = (
+            f"✅ Stable allocation (max CV={max_cv:.3f} < {threshold})" if is_stable
+            else f"⚠️ Unstable allocation (max CV={max_cv:.3f} ≥ {threshold})"
+        )
         
-        if max_variance > 25:  # If daily % varies by more than 5% std dev
-            status = "⚠️ WARNING"
-            message = "High variance in daily variant split detected. Check for traffic routing issues."
-        else:
-            status = "✅ PASS"
-            message = "Variant split is temporally consistent."
-        
-        print(f"\nStatus: {status}")
-        print(f"Conclusion: {message}")
-        print()
-        
-        self.validation_results['temporal_consistency'] = {
-            'daily_variance': variance_by_variant,
-            'max_variance': max_variance,
-            'status': status,
+        return {
+            'test': 'temporal_stability',
+            'cv_by_variant': cv_results,
+            'max_cv': max_cv,
+            'threshold': threshold,
+            'is_stable': is_stable,
+            'n_days': len(daily_counts),
             'message': message,
-            'passed': max_variance <= 25
+            'passed': is_stable
         }
     
-    def check_outliers(self):
+    def outlier_detection(self, df: pd.DataFrame, n_cols: int = 5) -> Dict:
         """
-        Detect outliers in numeric metrics.
-        """
-        print("5. Outlier Detection")
-        print("-" * 70)
+        Detect outliers using IQR method.
         
-        numeric_cols = self.df.select_dtypes(include=[np.number]).columns
+        Outliers = values beyond 1.5*IQR from quartiles
+        """
+        
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
         metric_cols = [col for col in numeric_cols if col not in ['session_id', 'user_id']]
         
         outlier_summary = {}
+        total_outliers = 0
         
-        for col in metric_cols[:5]:  # Check first 5 numeric columns
-            # IQR method
-            Q1 = self.df[col].quantile(0.25)
-            Q3 = self.df[col].quantile(0.75)
+        for col in metric_cols[:n_cols]:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
             IQR = Q3 - Q1
             
             lower_bound = Q1 - 1.5 * IQR
             upper_bound = Q3 + 1.5 * IQR
             
-            outliers = self.df[(self.df[col] < lower_bound) | (self.df[col] > upper_bound)]
-            n_outliers = len(outliers)
-            pct_outliers = n_outliers / len(self.df) * 100
-            
-            print(f"\n{col}:")
-            print(f"  Range: [{self.df[col].min():.2f}, {self.df[col].max():.2f}]")
-            print(f"  IQR bounds: [{lower_bound:.2f}, {upper_bound:.2f}]")
-            print(f"  Outliers: {n_outliers:,} ({pct_outliers:.2f}%)")
+            outliers = ((df[col] < lower_bound) | (df[col] > upper_bound)).sum()
+            pct_outliers = outliers / len(df) * 100
             
             outlier_summary[col] = {
-                'n_outliers': n_outliers,
-                'pct_outliers': pct_outliers,
-                'lower_bound': lower_bound,
-                'upper_bound': upper_bound
+                'n_outliers': outliers,
+                'pct_outliers': pct_outliers
             }
+            total_outliers += outliers
         
-        # Overall assessment
-        max_outlier_pct = max([v['pct_outliers'] for v in outlier_summary.values()])
+        max_outlier_pct = max([v['pct_outliers'] for v in outlier_summary.values()]) if outlier_summary else 0
         
         if max_outlier_pct > 10:
-            status = "⚠️ WARNING"
-            message = f"High percentage of outliers detected ({max_outlier_pct:.2f}%). Consider winsorization."
+            status = '⚠️ WARNING'
+            message = f"High outlier percentage ({max_outlier_pct:.2f}%). Consider winsorization."
+            passed = False
         else:
-            status = "✅ PASS"
-            message = "Outlier levels are within acceptable range."
+            status = '✅ PASS'
+            message = "Outlier levels within acceptable range."
+            passed = True
         
-        print(f"\nStatus: {status}")
-        print(f"Conclusion: {message}")
-        print()
-        
-        self.validation_results['outliers'] = {
-            'summary': outlier_summary,
+        return {
+            'test': 'outlier_detection',
+            'outlier_summary': outlier_summary,
             'max_outlier_pct': max_outlier_pct,
             'status': status,
             'message': message,
-            'passed': max_outlier_pct <= 10
+            'passed': passed
         }
     
-    def check_sample_size(self, desired_power: float = 0.8, alpha: float = 0.05, mde: float = 0.05):
+    def sample_size_check(self,
+                         df: pd.DataFrame,
+                         variant_col: str,
+                         desired_power: float = 0.8,
+                         alpha: float = 0.05,
+                         mde: float = 0.05) -> Dict:
         """
         Check if sample size is adequate.
         
-        Parameters:
-        -----------
-        desired_power : float
-            Desired statistical power
-        alpha : float
-            Significance level
-        mde : float
-            Minimum detectable effect (relative)
+        Uses simplified power calculation: n ≈ 16 * (1/mde)^2
         """
-        print("6. Sample Size Adequacy Check")
-        print("-" * 70)
         
-        variant_counts = self.df[self.variant_col].value_counts()
+        variant_counts = df[variant_col].value_counts()
         min_sample = variant_counts.min()
         
-        print(f"\nSample sizes by variant:")
-        for variant, count in variant_counts.items():
-            print(f"  {variant}: {count:,}")
-        
-        print(f"\nSmallest variant: {min_sample:,} samples")
-        
-        # Rough sample size calculation for conversion rate test
-        # Using simplified formula: n ≈ 16 * (1/mde)^2 for 80% power, α=0.05
         required_per_variant = int(16 / (mde ** 2))
-        
-        print(f"\nFor {mde*100}% MDE with {desired_power*100}% power:")
-        print(f"  Required per variant: ~{required_per_variant:,}")
-        print(f"  Actual minimum: {min_sample:,}")
+        detectable_mde = np.sqrt(16 / min_sample) if min_sample > 0 else float('inf')
         
         if min_sample >= required_per_variant:
-            status = "✅ PASS"
-            message = f"Sample size is adequate for detecting {mde*100}% effect."
+            status = '✅ ADEQUATE'
+            message = f"Sample size sufficient for {mde*100}% MDE."
+            passed = True
         elif min_sample >= required_per_variant * 0.7:
-            status = "⚠️ WARNING"
-            message = f"Sample size may be underpowered. Can detect ~{np.sqrt(16/min_sample)*100:.1f}% effect."
+            status = '⚠️ BORDERLINE'
+            message = f"Can detect approximately {detectable_mde*100:.1f}% effect."
+            passed = True
         else:
-            status = "❌ UNDERPOWERED"
-            message = f"Sample size is too small. Can only detect ~{np.sqrt(16/min_sample)*100:.1f}% effect."
+            status = '❌ UNDERPOWERED'
+            message = f"Only detects {detectable_mde*100:.1f}% effects (need {mde*100}%)."
+            passed = False
         
-        print(f"\nStatus: {status}")
-        print(f"Conclusion: {message}")
-        print()
-        
-        self.validation_results['sample_size'] = {
+        return {
+            'test': 'sample_size',
             'variant_counts': variant_counts.to_dict(),
             'min_sample': int(min_sample),
             'required_sample': required_per_variant,
+            'detectable_mde': detectable_mde,
             'status': status,
             'message': message,
-            'passed': min_sample >= required_per_variant * 0.7
+            'passed': passed
         }
     
-    def assess_overall_validity(self):
+    def multiple_testing_correction(self,
+                                    pvalues: List[float],
+                                    method: str = 'holm',
+                                    alpha: float = 0.05) -> Dict:
         """
-        Provide overall assessment of test validity.
+        Multiple testing correction to control Type I error.
+        
+        Methods:
+        - 'bonferroni': Most conservative (alpha/k)
+        - 'holm': Holm-Bonferroni (recommended for 5-10 tests)
+        - 'fdr_bh': Benjamini-Hochberg FDR (for >10 tests)
         """
-        print("\n" + "="*70)
-        print("OVERALL VALIDATION SUMMARY")
-        print("="*70 + "\n")
         
-        # Count passes and failures
-        critical_checks = ['srm', 'data_integrity']
-        important_checks = ['randomization_balance', 'temporal_consistency']
+        pvalues_array = np.array(pvalues)
+        n_tests = len(pvalues_array)
         
-        critical_passed = all([self.validation_results[check].get('passed', False) 
-                              for check in critical_checks if check in self.validation_results])
+        reject, pvals_corrected, alphacSidak, alphacBonf = multipletests(
+            pvalues_array,
+            alpha=alpha,
+            method=method
+        )
         
-        important_issues = [check for check in important_checks 
-                           if check in self.validation_results and not self.validation_results[check].get('passed', True)]
+        method_names = {
+            'bonferroni': 'Bonferroni',
+            'holm': 'Holm-Bonferroni',
+            'fdr_bh': 'Benjamini-Hochberg FDR'
+        }
         
-        # Summary table
-        print(f"{'Check':<30} {'Status':<20} {'Result'}")
-        print("-" * 70)
+        return {
+            'test': 'multiple_testing_correction',
+            'method': method_names.get(method, method),
+            'n_tests': n_tests,
+            'alpha': alpha,
+            'original_pvalues': pvalues_array.tolist(),
+            'corrected_pvalues': pvals_corrected.tolist(),
+            'reject': reject.tolist(),
+            'n_significant_original': int(sum(pvalues_array < alpha)),
+            'n_significant_corrected': int(sum(reject)),
+            'message': (
+                f"✓ Correction: {method_names.get(method, method)}\n"
+                f"  Original significant: {sum(pvalues_array < alpha)}/{n_tests}\n"
+                f"  Corrected significant: {sum(reject)}/{n_tests}"
+            )
+        }
+    
+    def run_all_validations(self,
+                           df: pd.DataFrame,
+                           variant_col: str,
+                           covariates: Optional[List[str]] = None,
+                           date_col: Optional[str] = None,
+                           metric_pvalues: Optional[List[float]] = None,
+                           correction_method: str = 'holm') -> Dict:
+        """
+        Run complete validation suite.
+        """
         
-        for check, results in self.validation_results.items():
-            if check != 'overall':
-                status = results.get('status', 'UNKNOWN')
-                passed = '✅' if results.get('passed', False) else '⚠️' if 'WARNING' in status else '❌'
-                print(f"{check.replace('_', ' ').title():<30} {status:<20} {passed}")
+        results = {}
         
-        # Overall verdict
-        print("\n" + "="*70)
+        print("=" * 80)
+        print("COMPREHENSIVE VALIDATION SUITE")
+        print("=" * 80)
         
-        if critical_passed and len(important_issues) == 0:
-            overall_status = "✅ VALID"
-            overall_message = "Test passes all validation checks. Proceed with statistical analysis."
-            recommendation = "GREEN LIGHT: Continue to statistical testing."
-        elif critical_passed and len(important_issues) <= 1:
-            overall_status = "⚠️ PROCEED WITH CAUTION"
-            overall_message = f"Test has minor issues in: {', '.join(important_issues)}. Consider stratified analysis."
-            recommendation = "YELLOW LIGHT: Proceed with statistical testing but note limitations."
+        # 1. SRM Test
+        print("\n1. Sample Ratio Mismatch Test")
+        print("-" * 80)
+        srm_result = self.sample_ratio_mismatch_test(df, variant_col)
+        results['srm'] = srm_result
+        print(srm_result.get('message', srm_result.get('warning', '')))
+        
+        if srm_result['has_srm']:
+            print("\n" + "=" * 80)
+            print("VALIDATION FAILED: SRM DETECTED - EXPERIMENT IS INVALID")
+            print("=" * 80)
+            return results
+        
+        # 2. Data Integrity
+        print("\n2. Data Integrity Check")
+        print("-" * 80)
+        integrity_result = self.data_integrity_check(df)
+        results['data_integrity'] = integrity_result
+        print(integrity_result.get('message', ''))
+        if integrity_result['issues']:
+            for issue in integrity_result['issues']:
+                print(f"  - {issue}")
+        
+        # 3. Covariate Balance
+        if covariates:
+            print("\n3. Covariate Balance Check")
+            print("-" * 80)
+            balance_result = self.covariate_balance_check(df, variant_col, covariates)
+            results['balance'] = balance_result
+            print(balance_result.get('message', ''))
+        
+        # 4. Temporal Stability
+        if date_col:
+            print("\n4. Temporal Stability Check")
+            print("-" * 80)
+            temporal_result = self.temporal_stability_check(df, variant_col, date_col)
+            results['temporal'] = temporal_result
+            print(temporal_result.get('message', ''))
+        
+        # 5. Outlier Detection
+        print("\n5. Outlier Detection")
+        print("-" * 80)
+        outlier_result = self.outlier_detection(df)
+        results['outliers'] = outlier_result
+        print(outlier_result.get('message', ''))
+        
+        # 6. Sample Size
+        print("\n6. Sample Size Adequacy")
+        print("-" * 80)
+        sample_result = self.sample_size_check(df, variant_col)
+        results['sample_size'] = sample_result
+        print(f"Minimum sample: {sample_result['min_sample']:,}")
+        print(f"Required sample: {sample_result['required_sample']:,}")
+        print(sample_result.get('message', ''))
+        
+        # 7. Multiple Testing Correction
+        if metric_pvalues:
+            print("\n7. Multiple Testing Correction")
+            print("-" * 80)
+            correction_result = self.multiple_testing_correction(
+                metric_pvalues,
+                method=correction_method,
+                alpha=0.05
+            )
+            results['multiple_testing'] = correction_result
+            print(correction_result.get('message', ''))
+        
+        # Summary
+        print("\n" + "=" * 80)
+        print("VALIDATION SUMMARY")
+        print("=" * 80)
+        
+        critical_passed = srm_result['passed'] and integrity_result['passed']
+        all_passed = all(v.get('passed', True) for v in results.values())
+        
+        if critical_passed and all_passed:
+            print("\n✅ ALL VALIDATION CHECKS PASSED")
+            print("\nYou can proceed with statistical testing with full confidence.")
+        elif critical_passed:
+            print("\n⚠️ CRITICAL CHECKS PASSED, MINOR WARNINGS DETECTED")
+            print("\nProceed with caution and consider adjustment methods.")
         else:
-            overall_status = "❌ QUESTIONABLE"
-            overall_message = "Test has significant validity issues. Results may not be trustworthy."
-            recommendation = "RED LIGHT: Fix issues before proceeding or consider test invalid."
+            print("\n❌ CRITICAL VALIDATION FAILURES")
+            print("\nDO NOT analyze this experiment until issues are resolved.")
         
-        print(f"\nOVERALL STATUS: {overall_status}")
-        print(f"Assessment: {overall_message}")
-        print(f"Recommendation: {recommendation}")
-        print("\n" + "="*70 + "\n")
+        print("=" * 80 + "\n")
         
-        self.validation_results['overall'] = {
-            'status': overall_status,
-            'message': overall_message,
-            'recommendation': recommendation,
-            'critical_passed': critical_passed,
-            'important_issues': important_issues
-        }
+        return results
 
 
-def save_validation_report(validation_results: Dict[str, Any], test_name: str, output_path: str):
+# ============================================================================
+# CONVENIENCE FUNCTION FOR QUICK VALIDATION REPORT
+# ============================================================================
+
+def validate_test(test_name: str, df: pd.DataFrame) -> Dict:
     """
-    Save validation results to a text file.
+    Quick validation of a single test.
     
-    Parameters:
-    -----------
-    validation_results : Dict
-        Validation results from ABTestValidator
-    test_name : str
-        Name of the test
-    output_path : str
-        Path to save the report
+    Returns summary dictionary with key metrics.
     """
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(f"VALIDATION REPORT: {test_name}\n")
-        f.write(f"{'='*70}\n\n")
-        
-        for check, results in validation_results.items():
-            f.write(f"{check.replace('_', ' ').upper()}\n")
-            f.write(f"{'-'*70}\n")
-            f.write(f"Status: {results.get('status', 'N/A')}\n")
-            f.write(f"Message: {results.get('message', 'N/A')}\n")
-            f.write(f"Passed: {results.get('passed', 'N/A')}\n\n")
-        
-        f.write(f"{'='*70}\n")
-        f.write(f"Report generated: {pd.Timestamp.now()}\n")
     
-    print(f"✅ Validation report saved to: {output_path}")
+    validator = ExperimentValidator()
+    
+    # Run validations
+    srm = validator.sample_ratio_mismatch_test(df, 'variant')
+    integrity = validator.data_integrity_check(df)
+    balance = validator.covariate_balance_check(
+        df, 'variant', ['device_type', 'browser', 'region']
+    )
+    temporal = validator.temporal_stability_check(df, 'variant', 'timestamp')
+    outliers = validator.outlier_detection(df)
+    sample_size = validator.sample_size_check(df, 'variant')
+    
+    return {
+        'test': test_name,
+        'n_sessions': len(df),
+        'n_variants': len(df['variant'].unique()),
+        'srm_pvalue': round(srm['pvalue'], 6),
+        'srm_passed': srm['passed'],
+        'integrity_passed': integrity['passed'],
+        'balance_smd': round(balance['max_smd'], 3),
+        'balance_passed': balance['passed'],
+        'temporal_cv': round(temporal['max_cv'], 3),
+        'temporal_passed': temporal['passed'],
+        'outlier_pct': round(outliers['max_outlier_pct'], 2),
+        'outlier_passed': outliers['passed'],
+        'min_sample': sample_size['min_sample'],
+        'sample_passed': sample_size['passed'],
+        'validity': 'VALID' if (srm['passed'] and integrity['passed']) else 'INVALID'
+    }
+
+
+# ============================================================================
+# MAIN VALIDATION RUNNER FOR ALL 5 TESTS
+# ============================================================================
+
+def validate_all_tests():
+    """Run validation on all 5 A/B tests and generate summary report."""
+    
+    print("="*80)
+    print("COMPREHENSIVE VALIDATION FOR ALL 5 A/B TESTS")
+    print("="*80)
+    
+    tests = [
+        ('Test 1: Menu Design', 'data/test1_menu.csv'),
+        ('Test 2: Novelty Slider', 'data/test2_novelty_slider.csv'),
+        ('Test 3: Product Sliders', 'data/test3_product_sliders.csv'),
+        ('Test 4: Customer Reviews', 'data/test4_reviews.csv'),
+        ('Test 5: Search Engine', 'data/test5_search_engine.csv')
+    ]
+    
+    results = []
+    
+    for test_name, filepath in tests:
+        print(f"\n{'='*80}")
+        print(f"VALIDATING: {test_name}")
+        print('='*80)
+        
+        try:
+            df = pd.read_csv(filepath)
+            print(f"✓ Loaded: {len(df):,} rows\n")
+            
+            result = validate_test(test_name, df)
+            results.append(result)
+            
+        except FileNotFoundError:
+            print(f"✗ File not found: {filepath}")
+            print("  Run data_generation.py first!")
+            continue
+    
+    # Summary table
+    if results:
+        print(f"\n\n{'='*80}")
+        print("VALIDATION SUMMARY TABLE")
+        print('='*80)
+        
+        summary_df = pd.DataFrame(results)
+        
+        print(f"\n{'Test':<30} {'N':>8} {'Valid':>10} {'SRM':<8} {'Balance':<8} {'Temporal':<8}")
+        print('-'*80)
+        
+        for _, row in summary_df.iterrows():
+            test = row['test'][:28]
+            n = f"{int(row['n_sessions']):,}"
+            valid = row['validity']
+            srm = "✅" if row['srm_passed'] else "❌"
+            balance = "✅" if row['balance_passed'] else "⚠️"
+            temporal = "✅" if row['temporal_passed'] else "⚠️"
+            
+            print(f"{test:<30} {n:>8} {valid:>10} {srm:<8} {balance:<8} {temporal:<8}")
+        
+        # Stats
+        print(f"\n{'='*80}")
+        print("OVERALL STATISTICS")
+        print('='*80)
+        
+        total_sessions = summary_df['n_sessions'].sum()
+        n_valid = (summary_df['validity'] == 'VALID').sum()
+        
+        print(f"\nTotal sessions: {total_sessions:,}")
+        print(f"Valid tests: {n_valid}/{len(results)}")
+        
+        if n_valid == len(results):
+            print("\n✅ ALL TESTS ARE VALID")
+            print("Proceed to Stage 4: Statistical Testing")
+        else:
+            invalid = summary_df[summary_df['validity'] == 'INVALID']
+            print(f"\n❌ {len(invalid)} INVALID TEST(S):")
+            for _, row in invalid.iterrows():
+                print(f"   - {row['test']}")
+
+
+if __name__ == "__main__":
+    validate_all_tests()

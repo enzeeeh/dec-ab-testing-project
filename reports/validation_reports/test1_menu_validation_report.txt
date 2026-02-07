@@ -3,45 +3,39 @@ VALIDATION REPORT: Menu Navigation Test
 
 SRM
 ----------------------------------------------------------------------
-Status: ✅ PASS
-Message: No Sample Ratio Mismatch detected.
+Status: N/A
+Message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
 Passed: True
 
 DATA INTEGRITY
 ----------------------------------------------------------------------
 Status: ⚠️ WARNING
 Message: Minor data quality issues detected: 1 issue(s).
-Passed: False
-
-RANDOMIZATION BALANCE
-----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Randomization appears balanced across all demographic variables.
 Passed: True
 
-TEMPORAL CONSISTENCY
+BALANCE
 ----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Variant split is temporally consistent.
+Status: N/A
+Message: ✅ Excellent balance (max SMD=0.026 < 0.1)
+Passed: True
+
+TEMPORAL
+----------------------------------------------------------------------
+Status: N/A
+Message: ✅ Stable allocation (max CV=0.057 < 0.2)
 Passed: True
 
 OUTLIERS
 ----------------------------------------------------------------------
 Status: ✅ PASS
-Message: Outlier levels are within acceptable range.
+Message: Outlier levels within acceptable range.
 Passed: True
 
 SAMPLE SIZE
 ----------------------------------------------------------------------
 Status: ❌ UNDERPOWERED
-Message: Sample size is too small. Can only detect ~6.8% effect.
+Message: Only detects 6.8% effects (need 5.0%).
 Passed: False
 
-OVERALL
-----------------------------------------------------------------------
-Status: ❌ QUESTIONABLE
-Message: Test has significant validity issues. Results may not be trustworthy.
-Passed: N/A
-
 ======================================================================
-Report generated: 2026-02-04 14:10:40.782307
+Report generated: 2026-02-08 00:02:12.548003
