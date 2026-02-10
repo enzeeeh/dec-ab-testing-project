@@ -70,8 +70,18 @@ python scripts/run_statistical_tests.py
 ## 📊 Reports & Documentation
 
 ### Executive Documentation
-- **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Complete business summary with recommendations
-- **[docs/AB_Testing_Methodology.md](docs/AB_Testing_Methodology.md)** - Full methodology with statistical formulas
+- **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Complete business summary with actionable recommendations and implementation roadmap
+- **[docs/AB_Testing_Methodology.md](docs/AB_Testing_Methodology.md)** - Full methodology with mathematical formulas, decision trees, and test selection logic (GitHub-optimized Markdown)
+
+### Methodology Notebook
+- **[notebooks/AB_Testing_Methodology_and_Formulas.ipynb](notebooks/AB_Testing_Methodology_and_Formulas.ipynb)** - Interactive Jupyter notebook containing:
+  - Complete validation framework with SRM and balance checks
+  - Statistical testing methods (Two-Proportion Z-Test, Mann-Whitney U, Kruskal-Wallis H)
+  - LaTeX formulas for all statistical procedures
+  - Test selection decision tree with automation logic
+  - Multiple testing correction (Holm-Bonferroni) algorithm
+  - Comprehensive results tables for all 5 tests
+  - Business recommendations with confidence levels
 
 ### Validation Reports
 `reports/validation_reports/`:
