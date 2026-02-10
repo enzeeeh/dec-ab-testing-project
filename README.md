@@ -42,8 +42,12 @@ dec-ab-testing-project/
 │   ├── validation_reports/       # Validation results
 │   └── statistical_results/      # Statistical test results
 ├── docs/                         # Documentation
+│   ├── AB_Testing_Methodology.md # Complete methodology & formulas
 │   ├── VALIDATION_SUMMARY.md    # Validation summary
 │   └── STATISTICAL_RESULTS.md   # Statistical findings
+├── notebooks/                    # Jupyter notebooks
+│   └── AB_Testing_Methodology_and_Formulas.ipynb
+├── EXECUTIVE_SUMMARY.md          # Business-ready executive summary
 └── requirements.txt
 ```
 
@@ -63,7 +67,11 @@ python scripts/run_validation.py
 python scripts/run_statistical_tests.py
 ```
 
-## 📊 Reports
+## 📊 Reports & Documentation
+
+### Executive Documentation
+- **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Complete business summary with recommendations
+- **[docs/AB_Testing_Methodology.md](docs/AB_Testing_Methodology.md)** - Full methodology with statistical formulas
 
 ### Validation Reports
 `reports/validation_reports/`:
