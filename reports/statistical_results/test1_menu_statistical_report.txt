@@ -1,0 +1,124 @@
+================================================================================
+STATISTICAL ANALYSIS REPORT: TEST1_MENU
+================================================================================
+Generated: 2026-02-08 23:01:47.779919
+================================================================================
+
+
+METRIC: revenue
+======================================================================
+Test Type: Mann-Whitney U Test
+Metric Type: continuous
+Sample Size: 7,000
+
+P-Value: 0.000000
+Significant: YES ✅
+
+Variant A (A_horizontal_menu): n=3,500
+Variant B (B_dropdown_menu): n=3,500
+
+Mean A: 3.4946
+Mean B: 3.1272
+Difference: -0.3674
+
+Interpretation:
+Variant B has significantly lower median (p=0.0000). Effect size r=-0.077
+======================================================================
+
+
+METRIC: pages_viewed
+======================================================================
+Test Type: Mann-Whitney U Test
+Metric Type: continuous
+Sample Size: 7,000
+
+P-Value: 0.067483
+Significant: NO
+
+Variant A (A_horizontal_menu): n=3,500
+Variant B (B_dropdown_menu): n=3,500
+
+Mean A: 2.1944
+Mean B: 2.1504
+Difference: -0.0440
+
+Interpretation:
+No significant difference in distributions (p=0.0675).
+======================================================================
+
+
+METRIC: added_to_cart
+======================================================================
+Test Type: Two-Proportion Z-Test
+Metric Type: binary
+Sample Size: 7,000
+
+P-Value: 0.000000
+Significant: YES ✅
+
+Variant A (A_horizontal_menu): n=3,500
+Variant B (B_dropdown_menu): n=3,500
+
+Conversion Rate A: 0.9617 (96.17%)
+Conversion Rate B: 0.8623 (86.23%)
+Absolute Difference: -0.0994
+Relative Lift: -10.34%
+95% CI: [-0.1127, -0.0862]
+
+Interpretation:
+Variant B has significantly lower rate (p=0.0000). Relative lift: -10.34%
+======================================================================
+
+
+METRIC: bounced
+======================================================================
+Test Type: Two-Proportion Z-Test
+Metric Type: binary
+Sample Size: 7,000
+
+P-Value: 0.335442
+Significant: NO
+
+Variant A (A_horizontal_menu): n=3,500
+Variant B (B_dropdown_menu): n=3,500
+
+Conversion Rate A: 0.4340 (43.40%)
+Conversion Rate B: 0.4454 (44.54%)
+Absolute Difference: 0.0114
+Relative Lift: 2.63%
+95% CI: [-0.0118, 0.0347]
+
+Interpretation:
+No significant difference (p=0.3354). Cannot conclude variant B differs from A.
+======================================================================
+
+
+================================================================================
+MULTIPLE TESTING CORRECTION
+================================================================================
+Method: HOLM
+Number of tests: 4
+Original alpha: 0.05
+Significant after correction: 2
+
+revenue:
+  Original p-value: 0.000000
+  Corrected p-value: 0.000000
+  Decision: SIGNIFICANT ✅
+
+pages_viewed:
+  Original p-value: 0.067483
+  Corrected p-value: 0.134965
+  Decision: NOT SIGNIFICANT
+
+added_to_cart:
+  Original p-value: 0.000000
+  Corrected p-value: 0.000000
+  Decision: SIGNIFICANT ✅
+
+bounced:
+  Original p-value: 0.335442
+  Corrected p-value: 0.335442
+  Decision: NOT SIGNIFICANT
+
+================================================================================

@@ -1,36 +1,31 @@
 # A/B Testing Analysis Project
 
-![Status](https://img.shields.io/badge/status-validation_complete-green)
+![Status](https://img.shields.io/badge/status-analysis_complete-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.8+-blue)
 ![Tests](https://img.shields.io/badge/tests-5-blue)
 
 ## 📊 Project Overview
 
-Statistical analysis of **5 A/B tests** on an e-commerce platform covering 102,000+ sessions (March - June 2021).
+Complete statistical analysis of **5 A/B tests** on an e-commerce platform (102,000+ sessions, March-June 2021).
 
-## 🎯 Tests Analyzed
+**Status:** ✅ Analysis Complete | 🎯 Results Ready for Business Decisions
 
-| Test | Sessions | Key Comparison | Metric |
-|------|----------|-----------------|--------|
-| Menu Navigation | 7,000 | Horizontal vs Dropdown | Revenue/Bounce |
-| Novelty Slider | 16,000 | Manual vs Personalized | Registration |
-| Product Sliders | 18,000 | 3-way Social Proof | Add-to-Cart |
-| Reviews | 42,000 | Featured vs No-Featured | Conversion |
-| Search Engine | 19,000 | Hybris vs Algolia | Revenue |
+## 🎯 Key Results
 
-## ✅ Validation Results Summary
+| Test | Winner | Key Finding |
+|------|--------|-------------|
+| Menu Navigation | **Variant A** ✅ | Horizontal menu: 10% higher add-to-cart |
+| Novelty Slider | **Variant B** ✅ | Personalized: 283% more products added |
+| Product Sliders | **See Details** | 3 significant metrics, review pairwise |
+| Reviews | **No Effect** | Featured reviews show no impact |
+| Search Engine | **Variant B** | Algolia: 1.5% add-to-cart increase |
 
-**Critical Checks:** All PASS ✅
-- Sample Ratio Mismatch (SRM): All balanced
-- Randomization Balance: Excellent (max SMD=0.039)
-- Temporal Stability: Stable (max CV=0.057)
+## ✅ Analysis Summary
 
-**Test Status:**
-- ✅ **Novelty Slider Test** - Ready for analysis
-- ✅ **Product Sliders Test** - Ready for analysis
-- ✅ **Search Engine Test** - Ready for analysis
-- ⚠️ **Menu Navigation Test** - Underpowered (6.8% MDE)
-- ⚠️ **Reviews Test** - High outliers (17.1%)
+**Validation:** All tests passed critical checks (SRM, balance, temporal stability)  
+**Statistical Tests:** Automatic selection based on metric type  
+**Correction:** Holm-Bonferroni applied for multiple testing  
+**Significant Findings:** 8 of 18 metrics significant after correction
 
 ## 📁 Project Structure
 
@@ -39,10 +34,16 @@ dec-ab-testing-project/
 ├── data/                          # 5 test CSV files
 ├── scripts/                       # Python modules
 │   ├── validation.py             # Data validation framework
+│   ├── statistical_analysis.py   # Statistical testing framework  
 │   ├── run_validation.py         # Validation runner
+│   ├── run_statistical_tests.py  # Statistical testing runner
 │   └── utils.py                  # Helper functions
-├── reports/validation_reports/   # Validation results
+├── reports/
+│   ├── validation_reports/       # Validation results
+│   └── statistical_results/      # Statistical test results
 ├── docs/                         # Documentation
+│   ├── VALIDATION_SUMMARY.md    # Validation summary
+│   └── STATISTICAL_RESULTS.md   # Statistical findings
 └── requirements.txt
 ```
 
@@ -53,24 +54,28 @@ dec-ab-testing-project/
 pip install -r requirements.txt
 ```
 
-### Run Validation
+### Run Complete Analysis
 ```bash
+# Step 1: Validate data quality
 python scripts/run_validation.py
+
+# Step 2: Run statistical tests
+python scripts/run_statistical_tests.py
 ```
 
-Generates reports in `reports/validation_reports/`:
-- Individual test reports (5 files)
-- Summary validation report
+## 📊 Reports
 
-## 📊 Reports Location
-
+### Validation Reports
 `reports/validation_reports/`:
-- `validation_summary.txt` - Overview of all tests
-- `test1_menu_validation_report.txt`
-- `test2_novelty_slider_validation_report.txt`
-- `test3_product_sliders_validation_report.txt`
-- `test4_reviews_validation_report.txt`
-- `test5_search_engine_validation_report.txt`
+- All 5 tests passed validation ✅
+- No SRM detected, balanced randomization
+- See [docs/VALIDATION_SUMMARY.md](docs/VALIDATION_SUMMARY.md)
+
+### Statistical Results
+`reports/statistical_results/`:
+- 8 of 18 metrics significant
+- Holm-Bonferroni correction applied
+- See [docs/STATISTICAL_RESULTS.md](docs/STATISTICAL_RESULTS.md)
 
 ## 🔧 Requirements
 

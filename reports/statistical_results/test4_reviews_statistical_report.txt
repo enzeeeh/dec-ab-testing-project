@@ -1,0 +1,72 @@
+================================================================================
+STATISTICAL ANALYSIS REPORT: TEST4_REVIEWS
+================================================================================
+Generated: 2026-02-08 23:01:48.361309
+================================================================================
+
+
+METRIC: converted
+======================================================================
+Test Type: Two-Proportion Z-Test
+Metric Type: binary
+Sample Size: 42,000
+
+P-Value: 0.776389
+Significant: NO
+
+Variant A (A_no_featured_reviews): n=21,000
+Variant B (B_featured_reviews): n=21,000
+
+Conversion Rate A: 0.1067 (10.67%)
+Conversion Rate B: 0.1075 (10.75%)
+Absolute Difference: 0.0009
+Relative Lift: 0.80%
+95% CI: [-0.0051, 0.0068]
+
+Interpretation:
+No significant difference (p=0.7764). Cannot conclude variant B differs from A.
+======================================================================
+
+
+METRIC: added_to_cart
+======================================================================
+Test Type: Two-Proportion Z-Test
+Metric Type: binary
+Sample Size: 42,000
+
+P-Value: 0.233193
+Significant: NO
+
+Variant A (A_no_featured_reviews): n=21,000
+Variant B (B_featured_reviews): n=21,000
+
+Conversion Rate A: 0.8268 (82.68%)
+Conversion Rate B: 0.8311 (83.11%)
+Absolute Difference: 0.0044
+Relative Lift: 0.53%
+95% CI: [-0.0028, 0.0116]
+
+Interpretation:
+No significant difference (p=0.2332). Cannot conclude variant B differs from A.
+======================================================================
+
+
+================================================================================
+MULTIPLE TESTING CORRECTION
+================================================================================
+Method: HOLM
+Number of tests: 2
+Original alpha: 0.05
+Significant after correction: 0
+
+converted:
+  Original p-value: 0.776389
+  Corrected p-value: 0.776389
+  Decision: NOT SIGNIFICANT
+
+added_to_cart:
+  Original p-value: 0.233193
+  Corrected p-value: 0.466386
+  Decision: NOT SIGNIFICANT
+
+================================================================================

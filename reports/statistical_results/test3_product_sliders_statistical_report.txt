@@ -1,0 +1,131 @@
+================================================================================
+STATISTICAL ANALYSIS REPORT: TEST3_PRODUCT_SLIDERS
+================================================================================
+Generated: 2026-02-08 23:01:48.167866
+================================================================================
+
+
+METRIC: revenue_from_recommendations
+======================================================================
+Test Type: Kruskal-Wallis H-Test
+Metric Type: continuous
+Sample Size: 18,000
+
+P-Value: 0.000000
+Significant: YES ✅
+
+Pairwise Comparisons (3 total):
+  A_selected_by_others_only vs B_similar_products_top: p=0.0000 ✅
+  A_selected_by_others_only vs C_selected_by_others_top: p=0.0001 ✅
+  B_similar_products_top vs C_selected_by_others_top: p=0.0000 ✅
+
+Interpretation:
+Significant difference detected (p=0.0000). 3 pairwise comparison(s) significant.
+======================================================================
+
+
+METRIC: add_to_cart_rate
+======================================================================
+Test Type: Chi-Square Test
+Metric Type: binary
+Sample Size: 18,000
+
+P-Value: 0.988847
+Significant: NO
+
+Interpretation:
+No association between variant and outcome (p=0.9888).
+======================================================================
+
+
+METRIC: slider_interactions
+======================================================================
+Test Type: Kruskal-Wallis H-Test
+Metric Type: count
+Sample Size: 18,000
+
+P-Value: 0.162151
+Significant: NO
+
+Pairwise Comparisons (3 total):
+  A_selected_by_others_only vs B_similar_products_top: p=0.0805
+  A_selected_by_others_only vs C_selected_by_others_top: p=0.1250
+  B_similar_products_top vs C_selected_by_others_top: p=0.8189
+
+Interpretation:
+No significant difference among variants (p=0.1622).
+======================================================================
+
+
+METRIC: products_per_order
+======================================================================
+Test Type: Kruskal-Wallis H-Test
+Metric Type: count
+Sample Size: 18,000
+
+P-Value: 0.000000
+Significant: YES ✅
+
+Pairwise Comparisons (3 total):
+  A_selected_by_others_only vs B_similar_products_top: p=0.0000 ✅
+  A_selected_by_others_only vs C_selected_by_others_top: p=0.0005 ✅
+  B_similar_products_top vs C_selected_by_others_top: p=0.0025 ✅
+
+Interpretation:
+Significant difference detected (p=0.0000). 3 pairwise comparison(s) significant.
+======================================================================
+
+
+METRIC: avg_product_price
+======================================================================
+Test Type: Kruskal-Wallis H-Test
+Metric Type: continuous
+Sample Size: 18,000
+
+P-Value: 0.000000
+Significant: YES ✅
+
+Pairwise Comparisons (3 total):
+  A_selected_by_others_only vs B_similar_products_top: p=0.0000 ✅
+  A_selected_by_others_only vs C_selected_by_others_top: p=0.0000 ✅
+  B_similar_products_top vs C_selected_by_others_top: p=0.0000 ✅
+
+Interpretation:
+Significant difference detected (p=0.0000). 3 pairwise comparison(s) significant.
+======================================================================
+
+
+================================================================================
+MULTIPLE TESTING CORRECTION
+================================================================================
+Method: HOLM
+Number of tests: 5
+Original alpha: 0.05
+Significant after correction: 3
+
+revenue_from_recommendations:
+  Original p-value: 0.000000
+  Corrected p-value: 0.000000
+  Decision: SIGNIFICANT ✅
+
+add_to_cart_rate:
+  Original p-value: 0.988847
+  Corrected p-value: 0.988847
+  Decision: NOT SIGNIFICANT
+
+slider_interactions:
+  Original p-value: 0.162151
+  Corrected p-value: 0.324302
+  Decision: NOT SIGNIFICANT
+
+products_per_order:
+  Original p-value: 0.000000
+  Corrected p-value: 0.000000
+  Decision: SIGNIFICANT ✅
+
+avg_product_price:
+  Original p-value: 0.000000
+  Corrected p-value: 0.000000
+  Decision: SIGNIFICANT ✅
+
+================================================================================

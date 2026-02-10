@@ -1,0 +1,98 @@
+================================================================================
+STATISTICAL ANALYSIS REPORT: TEST2_NOVELTY_SLIDER
+================================================================================
+Generated: 2026-02-08 23:01:47.876756
+================================================================================
+
+
+METRIC: novelty_revenue
+======================================================================
+Test Type: Mann-Whitney U Test
+Metric Type: continuous
+Sample Size: 16,000
+
+P-Value: 0.000000
+Significant: YES ✅
+
+Variant A (A_manual_novelties): n=8,000
+Variant B (B_personalized_novelties): n=8,000
+
+Mean A: 4.2307
+Mean B: 4.4763
+Difference: 0.2456
+
+Interpretation:
+Variant B has significantly higher median (p=0.0000). Effect size r=0.050
+======================================================================
+
+
+METRIC: is_registered
+======================================================================
+Test Type: Two-Proportion Z-Test
+Metric Type: binary
+Sample Size: 16,000
+
+P-Value: 0.898841
+Significant: NO
+
+Variant A (A_manual_novelties): n=8,000
+Variant B (B_personalized_novelties): n=8,000
+
+Conversion Rate A: 0.4506 (45.06%)
+Conversion Rate B: 0.4496 (44.96%)
+Absolute Difference: -0.0010
+Relative Lift: -0.22%
+95% CI: [-0.0164, 0.0144]
+
+Interpretation:
+No significant difference (p=0.8988). Cannot conclude variant B differs from A.
+======================================================================
+
+
+METRIC: products_added_from_novelties
+======================================================================
+Test Type: Two-Proportion Z-Test
+Metric Type: binary
+Sample Size: 16,000
+
+P-Value: 0.000008
+Significant: YES ✅
+
+Variant A (A_manual_novelties): n=8,000
+Variant B (B_personalized_novelties): n=8,000
+
+Conversion Rate A: 0.0015 (0.15%)
+Conversion Rate B: 0.0057 (0.57%)
+Absolute Difference: 0.0043
+Relative Lift: 283.33%
+95% CI: [0.0024, 0.0061]
+
+Interpretation:
+Variant B has significantly higher rate (p=0.0000). Relative lift: 283.33%
+======================================================================
+
+
+================================================================================
+MULTIPLE TESTING CORRECTION
+================================================================================
+Method: HOLM
+Number of tests: 3
+Original alpha: 0.05
+Significant after correction: 2
+
+novelty_revenue:
+  Original p-value: 0.000000
+  Corrected p-value: 0.000000
+  Decision: SIGNIFICANT ✅
+
+is_registered:
+  Original p-value: 0.898841
+  Corrected p-value: 0.898841
+  Decision: NOT SIGNIFICANT
+
+products_added_from_novelties:
+  Original p-value: 0.000008
+  Corrected p-value: 0.000015
+  Decision: SIGNIFICANT ✅
+
+================================================================================

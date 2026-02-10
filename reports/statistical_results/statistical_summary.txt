@@ -1,0 +1,48 @@
+================================================================================
+A/B TESTING - STATISTICAL ANALYSIS SUMMARY
+================================================================================
+Generated: 2026-02-08 23:01:48.661472
+Total Tests Analyzed: 5
+================================================================================
+
+SUMMARY TABLE
+--------------------------------------------------------------------------------
+Test                           Metrics    Sig (Raw)    Sig (Corrected)
+--------------------------------------------------------------------------------
+Menu Navigation Test           4          2            2              
+Novelty Slider Test            3          2            2              
+Product Sliders Test           5          3            3              
+Reviews Test                   2          0            0              
+Search Engine Test             4          1            1              
+--------------------------------------------------------------------------------
+
+DETAILED FINDINGS
+================================================================================
+
+Menu Navigation Test
+--------------------------------------------------------------------------------
+  ✅ revenue: Variant B has significantly lower median (p=0.0000). Effect size r=-0.077
+  ✅ added_to_cart: Variant B has significantly lower rate (p=0.0000). Relative lift: -10.34%
+
+Novelty Slider Test
+--------------------------------------------------------------------------------
+  ✅ novelty_revenue: Variant B has significantly higher median (p=0.0000). Effect size r=0.050
+  ✅ products_added_from_novelties: Variant B has significantly higher rate (p=0.0000). Relative lift: 283.33%
+
+Product Sliders Test
+--------------------------------------------------------------------------------
+  ✅ revenue_from_recommendations: Significant difference detected (p=0.0000). 3 pairwise comparison(s) significant.
+  ✅ products_per_order: Significant difference detected (p=0.0000). 3 pairwise comparison(s) significant.
+  ✅ avg_product_price: Significant difference detected (p=0.0000). 3 pairwise comparison(s) significant.
+
+Reviews Test
+--------------------------------------------------------------------------------
+  No significant findings after correction.
+
+Search Engine Test
+--------------------------------------------------------------------------------
+  ✅ added_to_cart: Variant B has significantly higher rate (p=0.0014). Relative lift: 1.51%
+
+================================================================================
+END OF REPORT
+================================================================================
