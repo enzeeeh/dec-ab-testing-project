@@ -1,41 +1,75 @@
-VALIDATION REPORT: Search Engine Test
-======================================================================
+VALIDATION REPORT: test5_search_engine.csv
+================================================================================
 
-SRM
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
-Passed: True
+[srm]
+- test: sample_ratio_mismatch
+- chi2_statistic: 0.0
+- degrees_of_freedom: 1
+- pvalue: 1.0
+- threshold: 0.001
+- has_srm: False
+- observed_counts: {'A_hybris_search': 9500, 'B_algolia_search': 9500}
+- expected_counts: {'A_hybris_search': 9500.0, 'B_algolia_search': 9500.0}
+- observed_ratio: {'A_hybris_search': 0.5, 'B_algolia_search': 0.5}
+- expected_ratio: {'A_hybris_search': 0.5, 'B_algolia_search': 0.5}
+- passed: True
+- message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
 
-DATA INTEGRITY
-----------------------------------------------------------------------
-Status: ⚠️ WARNING
-Message: Minor data quality issues detected: 1 issue(s).
-Passed: True
+[data_integrity]
+- test: data_integrity
+- issues: ['Duplicate session_ids: 9500', 'Duplicate user_ids: 12695']
+- n_issues: 2
+- status: ⚠️ WARNING
+- message: Minor data quality issues detected: 2 issue(s).
+- passed: True
 
-BALANCE
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ Excellent balance (max SMD=0.032 < 0.1)
-Passed: True
+[balance]
+- test: covariate_balance
+- balance_results:               covariate         type       smd  imbalanced
+0   device_type=desktop  categorical  0.003868       False
+1    device_type=mobile  categorical  0.005712       False
+2    device_type=tablet  categorical  0.021510       False
+3        browser=Chrome  categorical  0.002316       False
+4        browser=Safari  categorical  0.024001       False
+5       browser=Firefox  categorical  0.021098       False
+6          browser=Edge  categorical  0.005651       False
+7          region=Other  categorical  0.015562       False
+8          region=Split  categorical  0.013295       False
+9         region=Zagreb  categorical  0.021461       False
+10        region=Osijek  categorical  0.007105       False
+11        region=Rijeka  categorical  0.031908       False
+- imbalanced_covariates: []
+- n_imbalanced: 0
+- max_smd: 0.03190846856728473
+- threshold: 0.2
+- message: ✅ Excellent balance (max SMD=0.032 < 0.1)
+- passed: True
 
-TEMPORAL
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ Stable allocation (max CV=0.026 < 0.2)
-Passed: True
+[temporal]
+- test: temporal_stability
+- cv_by_variant: {'A_hybris_search': np.float64(0.023870456788560878), 'B_algolia_search': np.float64(0.026401264694517777)}
+- max_cv: 0.026401264694517777
+- threshold: 0.2
+- is_stable: True
+- n_days: 7
+- message: ✅ Stable allocation (max CV=0.026 < 0.2)
+- passed: True
 
-OUTLIERS
-----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Outlier levels within acceptable range.
-Passed: True
+[outliers]
+- test: outlier_detection
+- outlier_summary: {'avg_revenue_per_visitor': {'n_outliers': np.int64(698), 'pct_outliers': np.float64(3.6736842105263157)}, 'added_to_cart': {'n_outliers': np.int64(1795), 'pct_outliers': np.float64(9.447368421052632)}, 'converted': {'n_outliers': np.int64(1289), 'pct_outliers': np.float64(6.78421052631579)}, 'interacted_with_search': {'n_outliers': np.int64(0), 'pct_outliers': np.float64(0.0)}}
+- max_outlier_pct: 9.447368421052632
+- status: ✅ PASS
+- message: Outlier levels within acceptable range.
+- passed: True
 
-SAMPLE SIZE
-----------------------------------------------------------------------
-Status: ✅ ADEQUATE
-Message: Sample size sufficient for 5.0% MDE.
-Passed: True
+[sample_size]
+- test: sample_size
+- variant_counts: {'A_hybris_search': 9500, 'B_algolia_search': 9500}
+- min_sample: 9500
+- required_sample: 6399
+- detectable_mde: 0.04103913408340616
+- status: ✅ ADEQUATE
+- message: Sample size sufficient for 5.0% MDE.
+- passed: True
 
-======================================================================
-Report generated: 2026-02-08 00:02:13.270008

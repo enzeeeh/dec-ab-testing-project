@@ -113,14 +113,36 @@ class ExperimentValidator:
         - Missing values
         - Negative revenues
         - Future dates
+        - Variant assignment mismatches
         """
         
         issues = []
         
         # Duplicates
-        duplicates = df.duplicated(subset=['session_id']).sum() if 'session_id' in df.columns else 0
-        if duplicates > 0:
-            issues.append(f"Duplicate session IDs: {duplicates}")
+        duplicate_keys = ['session_id', 'user_id']
+        for key in duplicate_keys:
+            if key in df.columns:
+                duplicates = df.duplicated(subset=[key]).sum()
+                if duplicates > 0:
+                    issues.append(f"Duplicate {key}s: {duplicates}")
+
+        # Common assignment mismatch checks for A/B experiments
+        assignment_pairs = [
+            ('group', 'landing_page', {'control': 'old_page', 'treatment': 'new_page'}),
+            ('variant', 'landing_page', {'control': 'old_page', 'treatment': 'new_page'}),
+        ]
+        for variant_key, target_key, expected_map in assignment_pairs:
+            if variant_key in df.columns and target_key in df.columns:
+                valid_assignments = df[variant_key].map(expected_map)
+                mismatch_count = (
+                    valid_assignments.notna() &
+                    df[target_key].notna() &
+                    (df[target_key] != valid_assignments)
+                ).sum()
+                if mismatch_count > 0:
+                    issues.append(
+                        f"Assignment mismatches between {variant_key} and {target_key}: {int(mismatch_count)}"
+                    )
         
         # Missing values
         missing_counts = df.isnull().sum()
@@ -139,11 +161,14 @@ class ExperimentValidator:
         
         # Future dates
         if 'timestamp' in df.columns:
-            df_temp = df.copy()
-            df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'], errors='coerce')
-            future = (df_temp['timestamp'] > pd.Timestamp.now()).sum()
-            if future > 0:
-                issues.append(f"Future dates detected: {future} records")
+            timestamp_text = df['timestamp'].astype(str)
+            has_calendar_date = timestamp_text.str.contains(r'\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4}', regex=True).any()
+            if has_calendar_date:
+                df_temp = df.copy()
+                df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'], errors='coerce')
+                future = (df_temp['timestamp'] > pd.Timestamp.now()).sum()
+                if future > 0:
+                    issues.append(f"Future dates detected: {future} records")
         
         # Status
         if len(issues) == 0:

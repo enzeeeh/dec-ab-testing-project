@@ -1,41 +1,75 @@
-VALIDATION REPORT: Menu Navigation Test
-======================================================================
+VALIDATION REPORT: test1_menu.csv
+================================================================================
 
-SRM
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
-Passed: True
+[srm]
+- test: sample_ratio_mismatch
+- chi2_statistic: 0.0
+- degrees_of_freedom: 1
+- pvalue: 1.0
+- threshold: 0.001
+- has_srm: False
+- observed_counts: {'A_horizontal_menu': 3500, 'B_dropdown_menu': 3500}
+- expected_counts: {'A_horizontal_menu': 3500.0, 'B_dropdown_menu': 3500.0}
+- observed_ratio: {'A_horizontal_menu': 0.5, 'B_dropdown_menu': 0.5}
+- expected_ratio: {'A_horizontal_menu': 0.5, 'B_dropdown_menu': 0.5}
+- passed: True
+- message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
 
-DATA INTEGRITY
-----------------------------------------------------------------------
-Status: ⚠️ WARNING
-Message: Minor data quality issues detected: 1 issue(s).
-Passed: True
+[data_integrity]
+- test: data_integrity
+- issues: ['Duplicate session_ids: 3500', 'Duplicate user_ids: 4685']
+- n_issues: 2
+- status: ⚠️ WARNING
+- message: Minor data quality issues detected: 2 issue(s).
+- passed: True
 
-BALANCE
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ Excellent balance (max SMD=0.026 < 0.1)
-Passed: True
+[balance]
+- test: covariate_balance
+- balance_results:               covariate         type       smd  imbalanced
+0   device_type=desktop  categorical  0.012828       False
+1    device_type=mobile  categorical  0.001148       False
+2    device_type=tablet  categorical  0.026148       False
+3        browser=Safari  categorical  0.001312       False
+4        browser=Chrome  categorical  0.023429       False
+5          browser=Edge  categorical  0.012436       False
+6       browser=Firefox  categorical  0.023967       False
+7         region=Osijek  categorical  0.015665       False
+8          region=Other  categorical  0.014870       False
+9         region=Rijeka  categorical  0.014205       False
+10         region=Split  categorical  0.007838       False
+11        region=Zagreb  categorical  0.018033       False
+- imbalanced_covariates: []
+- n_imbalanced: 0
+- max_smd: 0.02614828164891752
+- threshold: 0.2
+- message: ✅ Excellent balance (max SMD=0.026 < 0.1)
+- passed: True
 
-TEMPORAL
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ Stable allocation (max CV=0.057 < 0.2)
-Passed: True
+[temporal]
+- test: temporal_stability
+- cv_by_variant: {'A_horizontal_menu': np.float64(0.034871191548325395), 'B_dropdown_menu': np.float64(0.05708473234295372)}
+- max_cv: 0.05708473234295372
+- threshold: 0.2
+- is_stable: True
+- n_days: 7
+- message: ✅ Stable allocation (max CV=0.057 < 0.2)
+- passed: True
 
-OUTLIERS
-----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Outlier levels within acceptable range.
-Passed: True
+[outliers]
+- test: outlier_detection
+- outlier_summary: {'pages_viewed': {'n_outliers': np.int64(29), 'pct_outliers': np.float64(0.41428571428571426)}, 'added_to_cart': {'n_outliers': np.int64(616), 'pct_outliers': np.float64(8.799999999999999)}, 'bounced': {'n_outliers': np.int64(0), 'pct_outliers': np.float64(0.0)}, 'revenue': {'n_outliers': np.int64(246), 'pct_outliers': np.float64(3.5142857142857142)}}
+- max_outlier_pct: 8.799999999999999
+- status: ✅ PASS
+- message: Outlier levels within acceptable range.
+- passed: True
 
-SAMPLE SIZE
-----------------------------------------------------------------------
-Status: ❌ UNDERPOWERED
-Message: Only detects 6.8% effects (need 5.0%).
-Passed: False
+[sample_size]
+- test: sample_size
+- variant_counts: {'A_horizontal_menu': 3500, 'B_dropdown_menu': 3500}
+- min_sample: 3500
+- required_sample: 6399
+- detectable_mde: 0.06761234037828133
+- status: ❌ UNDERPOWERED
+- message: Only detects 6.8% effects (need 5.0%).
+- passed: False
 
-======================================================================
-Report generated: 2026-02-08 00:02:12.548003

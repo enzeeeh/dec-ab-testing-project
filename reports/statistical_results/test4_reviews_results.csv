@@ -1,0 +1,2 @@
+metric,metric_type,n_variants,total_n,test_type,variant_A,variant_B,n_A,n_B,successes_A,successes_B,rate_A,rate_B,z_statistic,p_value,significant,absolute_difference,relative_lift,ci_lower,ci_upper,interpretation
+converted,binary,2,42000,Two-Proportion Z-Test,A_no_featured_reviews,B_featured_reviews,21000,21000,2240,2258,0.10666666666666667,0.10752380952380952,-0.28402738152002005,0.7763893969605563,False,0.000857142857142848,0.0080357142857142,-0.00505777982041444,0.006772065534700136,No significant difference (p=0.7764). Cannot conclude variant B differs from A.

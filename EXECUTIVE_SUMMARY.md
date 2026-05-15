@@ -5,8 +5,8 @@
 **Analysis Period:** March - June 2021  
 **Total Sessions Analyzed:** 102,000+  
 **Tests Evaluated:** 5  
-**Completion Date:** February 2026  
-**Status:** ✅ Analysis Complete - Ready for Implementation
+**Completion Date:** May 2026  
+**Status:** ✅ Analysis Complete — Full automated pipeline operational
 
 ---
 
@@ -14,7 +14,7 @@
 
 This document presents the complete findings from a comprehensive A/B testing analysis conducted on five feature variations for an e-commerce platform. Using rigorous statistical methodology, we validated data quality, performed appropriate hypothesis testing, and controlled for multiple comparisons to provide actionable recommendations with high confidence.
 
-**Key Achievement:** Successfully identified 2 high-impact features for immediate deployment and 1 feature to avoid based on statistically significant evidence.
+**Key Achievement:** Successfully identified 2 high-impact features for immediate deployment and 1 feature to avoid based on statistically significant evidence. All 5 internal experiments plus an external public benchmark are processed end-to-end in a single automated batch run, with multi-metric analysis, Holm-Bonferroni correction, and power/MDE reporting.
 
 ---
 
@@ -265,29 +265,34 @@ This document presents the complete findings from a comprehensive A/B testing an
 
 ### Key Documents
 
-1. **README.md** - Project overview and quick start
-2. **docs/VALIDATION_SUMMARY.md** - Validation results summary
-3. **docs/STATISTICAL_RESULTS.md** - Statistical findings summary
-4. **notebooks/AB_Testing_Methodology_and_Formulas.ipynb** - Complete methodology with formulas
+1. **README.md** - Project overview, quick start, and portfolio story (Problem → Method → Result → Recommendation for each test)
+2. **docs/PROJECT_REPORT.md** - Pipeline architecture, Kaggle cleaning details, interview talking points
+3. **docs/AB_Testing_Methodology.md** - Complete statistical methodology and formulas
+4. **notebooks/AB_Testing_Methodology_and_Formulas.ipynb** - Interactive methodology walkthrough
 
 ### Detailed Reports
 
 **Validation Reports** (`reports/validation_reports/`):
-- Individual test validation reports (5 files)
-- validation_summary.txt
+- Per-dataset validation reports (6 files — 5 internal + 1 Kaggle)
 
 **Statistical Reports** (`reports/statistical_results/`):
-- Individual test statistical reports (5 files)  
-- statistical_summary.txt
+- Per-dataset result CSVs (6 files)
+- `batch_summary.csv` — primary metric per dataset with MDE/power columns
+- `batch_all_metrics.csv` — all metrics with Holm correction flags
+
+**Batch Report** (`docs/BATCH_ANALYSIS_REPORT.md`):
+- At-a-glance summary table across all experiments
+- Per-experiment metric tables with correction results
+- Power analysis and MDE for binary metrics
+- Kaggle cleaning summary
 
 ### Code Implementation
 
 **Analysis Framework** (`scripts/`):
-- `validation.py` - 706-line validation framework
-- `statistical_analysis.py` - 850-line statistical testing framework
-- `run_validation.py` - Validation runner
-- `run_statistical_tests.py` - Statistical testing runner
-- `utils.py` - Helper functions
+- `validation.py` - Pre-analysis validation (6 checks)
+- `statistical_analysis.py` - Statistical testing engine (auto test selection, effect sizes, CI)
+- `run_pipeline.py` - Single-dataset pipeline (validate → test → plot → save); supports `clean_rules` for public datasets
+- `run_batch_analysis.py` - Batch runner (all datasets, multi-metric, MDE/power, Holm correction)
 
 ---
 
@@ -304,9 +309,9 @@ The analysis framework is production-ready, fully documented, and can be applied
 
 ---
 
-**Analysis Team:** GitHub Copilot with Claude Sonnet 4.5  
-**Completion Date:** February 2026  
-**Status:** ✅ **COMPLETE - READY FOR IMPLEMENTATION**
+**Analysis Team:** GitHub Copilot with Claude Sonnet 4.6  
+**Completion Date:** May 2026  
+**Status:** ✅ **COMPLETE — FULL AUTOMATED PIPELINE OPERATIONAL**
 
 ---
 

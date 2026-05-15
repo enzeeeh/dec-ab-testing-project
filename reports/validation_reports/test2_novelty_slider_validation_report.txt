@@ -1,41 +1,75 @@
-VALIDATION REPORT: Novelty Slider Test
-======================================================================
+VALIDATION REPORT: test2_novelty_slider.csv
+================================================================================
 
-SRM
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
-Passed: True
+[srm]
+- test: sample_ratio_mismatch
+- chi2_statistic: 0.0
+- degrees_of_freedom: 1
+- pvalue: 1.0
+- threshold: 0.001
+- has_srm: False
+- observed_counts: {'A_manual_novelties': 8000, 'B_personalized_novelties': 8000}
+- expected_counts: {'A_manual_novelties': 8000.0, 'B_personalized_novelties': 8000.0}
+- observed_ratio: {'A_manual_novelties': 0.5, 'B_personalized_novelties': 0.5}
+- expected_ratio: {'A_manual_novelties': 0.5, 'B_personalized_novelties': 0.5}
+- passed: True
+- message: ✅ No SRM detected (p=1.0000). Allocation is as expected.
 
-DATA INTEGRITY
-----------------------------------------------------------------------
-Status: ⚠️ WARNING
-Message: Minor data quality issues detected: 1 issue(s).
-Passed: True
+[data_integrity]
+- test: data_integrity
+- issues: ['Duplicate session_ids: 8000', 'Duplicate user_ids: 10735']
+- n_issues: 2
+- status: ⚠️ WARNING
+- message: Minor data quality issues detected: 2 issue(s).
+- passed: True
 
-BALANCE
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ Excellent balance (max SMD=0.028 < 0.1)
-Passed: True
+[balance]
+- test: covariate_balance
+- balance_results:               covariate         type       smd  imbalanced
+0   device_type=desktop  categorical  0.002554       False
+1    device_type=mobile  categorical  0.002514       False
+2    device_type=tablet  categorical  0.011581       False
+3        browser=Chrome  categorical  0.011750       False
+4        browser=Safari  categorical  0.009466       False
+5       browser=Firefox  categorical  0.014481       False
+6          browser=Edge  categorical  0.011374       False
+7         region=Zagreb  categorical  0.014697       False
+8         region=Rijeka  categorical  0.027723       False
+9          region=Split  categorical  0.027430       False
+10         region=Other  categorical  0.005653       False
+11        region=Osijek  categorical  0.019199       False
+- imbalanced_covariates: []
+- n_imbalanced: 0
+- max_smd: 0.02772318333129745
+- threshold: 0.2
+- message: ✅ Excellent balance (max SMD=0.028 < 0.1)
+- passed: True
 
-TEMPORAL
-----------------------------------------------------------------------
-Status: N/A
-Message: ✅ Stable allocation (max CV=0.038 < 0.2)
-Passed: True
+[temporal]
+- test: temporal_stability
+- cv_by_variant: {'A_manual_novelties': np.float64(0.03817043058223647), 'B_personalized_novelties': np.float64(0.03635752730407648)}
+- max_cv: 0.03817043058223647
+- threshold: 0.2
+- is_stable: True
+- n_days: 13
+- message: ✅ Stable allocation (max CV=0.038 < 0.2)
+- passed: True
 
-OUTLIERS
-----------------------------------------------------------------------
-Status: ✅ PASS
-Message: Outlier levels within acceptable range.
-Passed: True
+[outliers]
+- test: outlier_detection
+- outlier_summary: {'is_registered': {'n_outliers': np.int64(0), 'pct_outliers': np.float64(0.0)}, 'novelty_revenue': {'n_outliers': np.int64(435), 'pct_outliers': np.float64(2.71875)}, 'products_added_from_novelties': {'n_outliers': np.int64(58), 'pct_outliers': np.float64(0.36250000000000004)}}
+- max_outlier_pct: 2.71875
+- status: ✅ PASS
+- message: Outlier levels within acceptable range.
+- passed: True
 
-SAMPLE SIZE
-----------------------------------------------------------------------
-Status: ✅ ADEQUATE
-Message: Sample size sufficient for 5.0% MDE.
-Passed: True
+[sample_size]
+- test: sample_size
+- variant_counts: {'A_manual_novelties': 8000, 'B_personalized_novelties': 8000}
+- min_sample: 8000
+- required_sample: 6399
+- detectable_mde: 0.044721359549995794
+- status: ✅ ADEQUATE
+- message: Sample size sufficient for 5.0% MDE.
+- passed: True
 
-======================================================================
-Report generated: 2026-02-08 00:02:12.666963

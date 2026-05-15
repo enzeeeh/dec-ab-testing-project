@@ -1,0 +1,2 @@
+metric,metric_type,n_variants,total_n,test_type,variant_A,variant_B,n_A,n_B,successes_A,successes_B,rate_A,rate_B,z_statistic,p_value,significant,absolute_difference,relative_lift,ci_lower,ci_upper,interpretation
+added_to_cart,binary,2,7000,Two-Proportion Z-Test,A_horizontal_menu,B_dropdown_menu,3500,3500,3366,3018,0.9617142857142857,0.8622857142857143,14.682211257485458,8.381203684528199e-49,True,-0.09942857142857142,-0.1033868092691622,-0.11270177643715922,-0.08615536641998363,Variant B has significantly lower rate (p=0.0000). Relative lift: -10.34%

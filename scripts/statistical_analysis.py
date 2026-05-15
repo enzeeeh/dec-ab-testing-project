@@ -21,6 +21,8 @@ from statsmodels.stats.proportion import proportions_ztest
 from typing import Dict, List, Tuple, Optional, Union
 import warnings
 warnings.filterwarnings('ignore')
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 class MetricType:
@@ -658,3 +660,85 @@ class StatisticalAnalyzer:
         strength = "weak" if cramers_v < 0.1 else "moderate" if cramers_v < 0.3 else "strong"
         return (f"Significant association found (p={p_value:.4f}). "
                 f"Effect: {strength} (Cramér's V={cramers_v:.3f})")
+
+    def plot_metric_distribution(
+        self,
+        df: pd.DataFrame,
+        metric: str,
+        variant_col: str = 'variant',
+        save_path: Optional[str] = None,
+        show: bool = False
+    ) -> None:
+        """
+        Plot the distribution of a metric by variant.
+
+        Parameters:
+        -----------
+        df : pd.DataFrame
+            Experiment data
+        metric : str
+            Metric column name
+        variant_col : str
+            Variant column name
+        """
+        clean = df[[variant_col, metric]].dropna().copy()
+        metric_values = set(clean[metric].unique())
+
+        plt.figure(figsize=(10, 6))
+
+        if metric_values.issubset({0, 1, True, False}):
+            proportions = (
+                clean.groupby(variant_col)[metric]
+                .mean()
+                .reset_index(name='positive_rate')
+            )
+            sns.barplot(x=variant_col, y='positive_rate', data=proportions, palette="Set2")
+            plt.title(f"Positive Rate of {metric} by Variant")
+            plt.xlabel("Variant")
+            plt.ylabel("Positive rate")
+            plt.ylim(0, 1)
+        else:
+            sns.violinplot(x=variant_col, y=metric, data=clean, palette="Set2", inner='quartile', cut=0)
+            plt.title(f"Distribution of {metric} by Variant")
+            plt.xlabel("Variant")
+            plt.ylabel(metric)
+
+        plt.tight_layout()
+        if save_path:
+            plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        if show:
+            plt.show()
+        plt.close()
+
+    def plot_metric_bar_chart(
+        self,
+        df: pd.DataFrame,
+        metric: str,
+        variant_col: str = 'variant',
+        save_path: Optional[str] = None,
+        show: bool = False
+    ) -> None:
+        """
+        Plot a bar chart of the mean metric value by variant.
+
+        Parameters:
+        -----------
+        df : pd.DataFrame
+            Experiment data
+        metric : str
+            Metric column name
+        variant_col : str
+            Variant column name
+        """
+        mean_values = df.groupby(variant_col)[metric].mean().reset_index()
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x=variant_col, y=metric, data=mean_values, palette="Set2")
+        plt.title(f"Mean {metric} by Variant")
+        plt.xlabel("Variant")
+        plt.ylabel(f"Mean {metric}")
+        plt.tight_layout()
+        if save_path:
+            plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        if show:
+            plt.show()
+        plt.close()

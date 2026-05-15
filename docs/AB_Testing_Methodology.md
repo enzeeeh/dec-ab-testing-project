@@ -6,7 +6,7 @@
 **Period:** March - June 2021  
 **Tests Analyzed:** 5  
 **Total Sessions:** 102,000+  
-**Date:** February 2026
+**Last Updated:** May 2026
 
 ---
 
@@ -23,6 +23,62 @@ This document provides all statistical methods, formulas, and decision criteria 
 5. [Results Summary](#5-results-summary)
 6. [Business Recommendations](#6-business-recommendations)
 7. [Methodology Summary](#7-methodology-summary)
+
+---
+
+## Enhanced A/B Testing Methodology
+
+### Overview
+A/B testing is a statistical method used to compare two or more variants of a feature to determine which performs better based on a specific metric.
+
+### Key Concepts
+1. **Variants**: Different versions being tested (e.g., A = control, B = treatment).
+2. **Metrics**: Measurable outcomes (e.g., conversion rate, revenue).
+3. **Randomization**: Assigning users randomly to variants to avoid bias.
+4. **Statistical Testing**: Using statistical methods to determine if observed differences are significant.
+5. **Effect Size**: Measuring the magnitude of the difference (e.g., relative lift, Cohen's d).
+6. **Multiple Testing Correction**: Adjusting for false positives when testing multiple hypotheses.
+
+### Workflow
+1. **Define the Objective**:
+   - Identify the goal of the test (e.g., increase sign-ups).
+   - Define the primary metric (e.g., conversion rate).
+
+2. **Design the Experiment**:
+   - Formulate a hypothesis.
+   - Calculate the required sample size.
+   - Ensure randomization.
+
+3. **Collect Data**:
+   - Use tools like Google Analytics or custom tracking scripts.
+
+4. **Analyze Results**:
+   - Use statistical tests (e.g., t-test, chi-square).
+   - Correct for multiple comparisons.
+
+5. **Interpret Results**:
+   - Assess statistical and practical significance.
+
+6. **Take Action**:
+   - Implement the winning variant.
+
+### Statistical Methods
+- **Two-Proportion Z-Test**: For binary metrics.
+- **Welch's t-test**: For continuous metrics with unequal variances.
+- **Mann-Whitney U Test**: For skewed continuous metrics.
+- **Chi-Square Test**: For categorical outcomes.
+
+### Visualization
+- Use distribution plots and bar charts to interpret results visually.
+
+### Example Workflow
+1. Load the dataset using `run_pipeline.py`.
+2. Perform statistical analysis.
+3. Generate visualizations.
+4. Save results and interpret findings.
+
+### Public Dataset
+For practice, use Kaggle's "AB Testing Dataset" ([link](https://www.kaggle.com/datasets/)).
 
 ---
 
@@ -361,29 +417,29 @@ When testing multiple metrics within the same experiment, we apply Holm-Bonferro
 ## Tools & Implementation
 
 **Code Location:**
-- [scripts/validation.py](../scripts/validation.py) - Validation framework (706 lines)
-- [scripts/statistical_analysis.py](../scripts/statistical_analysis.py) - Statistical testing (850+ lines)
-- [scripts/run_validation.py](../scripts/run_validation.py) - Validation runner
-- [scripts/run_statistical_tests.py](../scripts/run_statistical_tests.py) - Statistical runner
+- [scripts/validation.py](../scripts/validation.py) - Validation framework
+- [scripts/statistical_analysis.py](../scripts/statistical_analysis.py) - Statistical testing engine
+- [scripts/run_pipeline.py](../scripts/run_pipeline.py) - Single-dataset pipeline (validation + inference + plots)
+- [scripts/run_batch_analysis.py](../scripts/run_batch_analysis.py) - Batch runner (all datasets, multi-metric, MDE)
 
 **Reports Generated:**
-- [reports/validation_reports/](../reports/validation_reports/) - 6 validation reports
-- [reports/statistical_results/](../reports/statistical_results/) - 6 statistical reports
-- [VALIDATION_SUMMARY.md](VALIDATION_SUMMARY.md) - Validation summary
-- [STATISTICAL_RESULTS.md](STATISTICAL_RESULTS.md) - Statistical summary
+- [reports/validation_reports/](../reports/validation_reports/) - Per-dataset validation reports
+- [reports/statistical_results/batch_summary.csv](../reports/statistical_results/batch_summary.csv) - Primary metric summary
+- [reports/statistical_results/batch_all_metrics.csv](../reports/statistical_results/batch_all_metrics.csv) - All metrics with Holm correction
+- [docs/BATCH_ANALYSIS_REPORT.md](BATCH_ANALYSIS_REPORT.md) - Human-readable batch report
 
 ## Analysis Complete ✅
 
-**Date Completed:** February 8, 2026  
-**Total Time:** Validation + Statistical Testing  
-**Status:** Ready for business decision and implementation
+**Date Completed:** May 2026  
+**Pipeline:** Fully automated batch runner — one command processes all datasets  
+**Status:** Complete — validation, multi-metric analysis, MDE/power reporting, and consolidated reports all operational
 
 ---
 
 **For questions or clarifications, see:**
-- [STATISTICAL_RESULTS.md](STATISTICAL_RESULTS.md) - Business-friendly summary
-- [reports/statistical_results/statistical_summary.txt](../reports/statistical_results/statistical_summary.txt) - Quick overview
-- Individual test reports for detailed analysis
+- [BATCH_ANALYSIS_REPORT.md](BATCH_ANALYSIS_REPORT.md) - Full per-metric results with Holm correction and MDE
+- [PROJECT_REPORT.md](PROJECT_REPORT.md) - Pipeline architecture, Kaggle cleaning, interview talking points
+- Individual validation reports in [reports/validation_reports/](../reports/validation_reports/)
 
 ---
 

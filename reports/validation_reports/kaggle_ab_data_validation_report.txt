@@ -1,0 +1,43 @@
+VALIDATION REPORT: kaggle_ab_data.csv
+================================================================================
+
+[srm]
+- test: sample_ratio_mismatch
+- chi2_statistic: 0.027451904582017808
+- degrees_of_freedom: 1
+- pvalue: 0.8684039359334774
+- threshold: 0.001
+- has_srm: False
+- observed_counts: {'control': 144226, 'treatment': 144315}
+- expected_counts: {'control': 144270.5, 'treatment': 144270.5}
+- observed_ratio: {'control': 0.49984577581695494, 'treatment': 0.500154224183045}
+- expected_ratio: {'control': 0.5, 'treatment': 0.5}
+- passed: True
+- message: ✅ No SRM detected (p=0.8684). Allocation is as expected.
+
+[data_integrity]
+- test: data_integrity
+- issues: []
+- n_issues: 0
+- status: ✅ PASS
+- message: No data integrity issues detected.
+- passed: True
+
+[outliers]
+- test: outlier_detection
+- outlier_summary: {'converted': {'n_outliers': np.int64(34483), 'pct_outliers': np.float64(11.950814615600557)}}
+- max_outlier_pct: 11.950814615600557
+- status: ⚠️ WARNING
+- message: High outlier percentage (11.95%). Consider winsorization.
+- passed: False
+
+[sample_size]
+- test: sample_size
+- variant_counts: {'treatment': 144315, 'control': 144226}
+- min_sample: 144226
+- required_sample: 6399
+- detectable_mde: 0.010532663559147226
+- status: ✅ ADEQUATE
+- message: Sample size sufficient for 5.0% MDE.
+- passed: True
+

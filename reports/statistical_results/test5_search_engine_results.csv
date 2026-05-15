@@ -1,0 +1,2 @@
+metric,metric_type,n_variants,total_n,test_type,variant_A,variant_B,n_A,n_B,successes_A,successes_B,rate_A,rate_B,z_statistic,p_value,significant,absolute_difference,relative_lift,ci_lower,ci_upper,interpretation
+converted,binary,2,19000,Two-Proportion Z-Test,A_hybris_search,B_algolia_search,9500,9500,629,660,0.06621052631578947,0.06947368421052631,-0.8943149568378449,0.3711533996321075,False,0.003263157894736843,0.049284578696343416,-0.0038884495169279505,0.010414765306401636,No significant difference (p=0.3712). Cannot conclude variant B differs from A.

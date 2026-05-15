@@ -1,0 +1,2 @@
+metric,metric_type,n_variants,total_n,test_type,variant_A,variant_B,n_A,n_B,successes_A,successes_B,rate_A,rate_B,z_statistic,p_value,significant,absolute_difference,relative_lift,ci_lower,ci_upper,interpretation
+converted,binary,2,294480,Two-Proportion Z-Test,control,treatment,147202,147278,17723,17514,0.12039917935897611,0.11891796466546259,1.2382796210706355,0.21561239744636074,False,-0.001481214693513519,-0.012302531474049371,-0.003825742334836052,0.0008633129478090142,No significant difference (p=0.2156). Cannot conclude variant B differs from A.
